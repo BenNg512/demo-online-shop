@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>買咩都唔會出貨</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* Top banner */
+    .top-banner {
+      background-color: rgb(11, 83, 148);
+      color: white;
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 15px;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .header .site-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    /* Hero section */
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                  url('https://ssl.gstatic.com/atari/images/simple-header-blended-small.png') center/cover;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero h1 {
+      color: #ffff00;
+      font-family: Impact, Arial, sans-serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 42px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    /* Main content */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 28px;
+      color: #1a1a1a;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .photo {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #eee;
+      display: block;
+    }
+
+    .no-photo {
+      width: 100%;
+      height: 180px;
+      background: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .info {
+      padding: 16px;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      font-size: 20px;
+      color: #e63946;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .stock {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .stock.out {
+      color: #e63946;
+      font-weight: 500;
+    }
+
+    .loading, .error {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #666;
+    }
+
+    .error {
+      color: #e63946;
+    }
+
+    /* Footer */
+    footer {
+      background: #e0f7fa;
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+      margin-top: 40px;
+    }
+
+    footer p {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Banner -->
+  <div class="top-banner">
+    限時優惠，所有產品10折！
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+    <div class="site-title">買咩都唔會出貨</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>This page is for demo</h1>
+  </div>
+
+  <!-- Product List -->
+  <div class="container">
+    <h2>最新產品價目</h2>
+    <div id="output" class="loading">正在載入產品資料...</div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Contact Us: +852-12345678</p>
+    <p>Email: abc@gmail.com</p>
+  </footer>
+
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
+
+    async function loadProducts() {
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+
+        // Clean the gviz response
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const rows = json.table.rows;
+
+        let html = `<div class="products">`;
+
+        rows.forEach(row => {
+          const cells = row.c;
+
+          const name     = cells[1] ? (cells[1].v || "") : "";
+          const price    = cells[2] ? (cells[2].v || "") : "";
+          const stock    = cells[3] ? (cells[3].v || 0) : 0;
+          const photoUrl = cells[4] ? (cells[4].v || "") : "";
+
+          if (!name) return;
+
+          const stockClass = stock <= 0 ? "out" : "";
+          const stockText  = stock <= 0 ? "暫時缺貨" : `存貨：${stock}`;
+
+          html += `
+            <div class="card">
+              ${photoUrl 
+                ? `<img class="photo" src="${photoUrl}" alt="${name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div class=\\'no-photo\\'>No Photo</div>')">`
+                : `<div class="no-photo">No Photo</div>`
+              }
+              <div class="info">
+                <div class="name">${name}</div>
+                <div class="price">$${Number(price).toFixed(2)}</div>
+                <div class="stock ${stockClass}">${stockText}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `</div>`;
+        document.getElementById("output").innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("output").innerHTML = 
+          `<div class="error">無法載入資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>`;
+      }
+    }
+
+    loadProducts();
+  </script>
+
+</body>
+</html>
