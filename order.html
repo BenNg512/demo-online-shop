@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下單表格v2 - 買咩都唔會出貨</title>
+  <title>下單表格V3 - Debug</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
@@ -28,33 +28,16 @@
       border-bottom: 1px solid #eee;
     }
     .header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
+      width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
     }
-    .header .site-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #222;
-    }
+    .header .site-title { font-size: 18px; font-weight: 600; }
     .container {
       max-width: 720px;
       margin: 0 auto;
       padding: 32px 20px 60px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 8px;
-      font-size: 28px;
-      color: #1a1a1a;
-    }
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 32px;
-      font-size: 15px;
-    }
+    h1 { text-align: center; margin-bottom: 8px; font-size: 28px; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 32px; }
     .card {
       background: white;
       border-radius: 12px;
@@ -65,31 +48,17 @@
     .card h2 {
       font-size: 18px;
       margin-bottom: 18px;
-      color: #1a1a1a;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="number"] {
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="number"] {
       width: 100%;
       padding: 12px 14px;
       margin-bottom: 16px;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
-    }
-    input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
     .product-item {
       display: flex;
@@ -99,99 +68,42 @@
       border-bottom: 1px solid #f0f0f0;
     }
     .product-item:last-child { border-bottom: none; }
-    .product-photo {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #eee;
-      flex-shrink: 0;
+    .product-photo, .no-photo {
+      width: 64px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
     }
     .no-photo {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
       background: #e9ecef;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      font-size: 11px;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #999; font-size: 11px;
     }
-    .product-info { flex: 1; min-width: 0; }
-    .product-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
-    .product-price { color: #e63946; font-weight: 600; font-size: 15px; }
-    .product-stock { font-size: 13px; color: #555; margin-top: 2px; }
-    .product-stock.out { color: #e63946; font-weight: 500; }
-    .qty-wrapper { width: 100px; flex-shrink: 0; }
+    .product-info { flex: 1; }
+    .product-name { font-weight: 600; font-size: 16px; }
+    .product-price { color: #e63946; font-weight: 600; }
+    .product-stock { font-size: 13px; color: #555; }
+    .product-stock.out { color: #e63946; }
+    .qty-wrapper { width: 100px; }
     .qty-wrapper input { margin-bottom: 0; text-align: center; }
-    .qty-wrapper input:disabled {
-      background: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-    }
+    .qty-wrapper input:disabled { background: #f5f5f5; color: #999; }
     .total-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      padding: 16px 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      font-size: 18px;
-      font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f8fafc; padding: 16px 20px; border-radius: 10px;
+      margin: 20px 0; font-size: 18px; font-weight: 600;
     }
     .total-price { color: #e63946; font-size: 22px; }
     button[type="submit"] {
-      width: 100%;
-      padding: 16px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: 600;
-      cursor: pointer;
+      width: 100%; padding: 16px; background: #2563eb; color: white;
+      border: none; border-radius: 10px; font-size: 17px; font-weight: 600; cursor: pointer;
     }
     button[type="submit"]:hover { background: #1d4ed8; }
-    button[type="submit"]:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
     .message {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 10px;
-      text-align: center;
-      display: none;
-      font-size: 15px;
+      margin-top: 20px; padding: 16px; border-radius: 10px;
+      text-align: center; display: none; font-size: 15px; white-space: pre-wrap;
     }
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
-      display: block;
-    }
-    .loading, .error-load {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-      font-size: 16px;
-    }
+    .message.success { background: #dcfce7; color: #166534; display: block; }
+    .message.error { background: #fee2e2; color: #991b1b; display: block; }
+    .loading, .error-load { text-align: center; padding: 40px 20px; color: #666; }
     .error-load { color: #e63946; }
-    footer {
-      background: #e0f7fa;
-      padding: 24px;
-      text-align: center;
-      font-size: 14px;
-      color: #333;
-      margin-top: 40px;
-    }
-    footer p { margin: 4px 0; }
-    @media (max-width: 520px) {
-      .product-item { flex-wrap: wrap; }
-      .qty-wrapper { width: 100%; margin-top: 8px; }
-    }
+    footer { background: #e0f7fa; padding: 24px; text-align: center; font-size: 14px; margin-top: 40px; }
   </style>
 </head>
 <body>
@@ -204,24 +116,20 @@
   </div>
 
   <div class="container">
-    <h1>下單表格</h1>
-    <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
+    <h1>下單表格 (Debug)</h1>
+    <p class="subtitle">這版本會顯示真實回覆，方便找出問題</p>
 
-    <form id="orderForm"
-          action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
-          method="POST"
-          target="hidden_iframe">
-
+    <form id="orderForm">
       <div class="card">
         <h2>聯絡資料</h2>
-        <label for="name">稱呼 *</label>
-        <input type="text" id="name" name="稱呼" required placeholder="例如：Ben">
+        <label>稱呼 *</label>
+        <input type="text" name="稱呼" required placeholder="例如：Ben">
 
-        <label for="email">Email *</label>
-        <input type="email" id="email" name="email" required placeholder="example@gmail.com">
+        <label>Email *</label>
+        <input type="email" name="email" required placeholder="example@gmail.com">
 
-        <label for="phone">電話號碼</label>
-        <input type="tel" id="phone" name="電話號碼" placeholder="例如：91234567">
+        <label>電話號碼</label>
+        <input type="tel" name="電話號碼" placeholder="例如：91234567">
       </div>
 
       <div class="card">
@@ -234,7 +142,7 @@
         <span class="total-price" id="totalPrice">$0.00</span>
       </div>
 
-      <button type="submit" id="submitBtn">提交訂單</button>
+      <button type="submit">提交訂單</button>
     </form>
 
     <div id="message" class="message"></div>
@@ -245,18 +153,16 @@
     <p>Email: abc@gmail.com</p>
   </footer>
 
-  <iframe name="hidden_iframe" style="display:none;"></iframe>
-
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec";
 
     function escapeHtml(str) {
       return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+        .replace(/"/g, "&quot;");
     }
 
     async function loadProducts() {
@@ -277,75 +183,80 @@
           if (!name) return;
 
           const isOut = stock <= 0;
-          const stockText = isOut ? "暫時缺貨" : `存貨：${stock}`;
-          const stockClass = isOut ? "out" : "";
-          const disabled = isOut ? "disabled" : "";
-          const maxAttr = isOut ? "" : `max="${stock}"`;
-
-          // IMPORTANT: use the RAW name for the form field name (no escapeHtml)
           html += `
             <div class="product-item">
               ${photo
-                ? `<img class="product-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" loading="lazy"
+                ? `<img class="product-photo" src="${escapeHtml(photo)}" alt="" loading="lazy"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                    <div class="no-photo" style="display:none;">No Photo</div>`
-                : `<div class="no-photo">No Photo</div>`
-              }
+                : `<div class="no-photo">No Photo</div>`}
               <div class="product-info">
                 <div class="product-name">${escapeHtml(name)}</div>
                 <div class="product-price">$${price.toFixed(2)}</div>
-                <div class="product-stock ${stockClass}">${stockText}</div>
+                <div class="product-stock ${isOut ? 'out' : ''}">${isOut ? '暫時缺貨' : '存貨：' + stock}</div>
               </div>
               <div class="qty-wrapper">
-                <input type="number"
-                       name="${name}"
-                       min="0"
-                       ${maxAttr}
-                       value="0"
-                       ${disabled}
-                       data-price="${price}"
-                       data-stock="${stock}">
+                <input type="number" name="${name}" min="0" ${isOut ? 'disabled' : `max="${stock}"`} value="0" data-price="${price}">
               </div>
-            </div>
-          `;
+            </div>`;
         });
+        listEl.innerHTML = html || '<div class="error-load">暫時沒有產品</div>';
 
-        listEl.innerHTML = html || `<div class="error-load">暫時沒有產品</div>`;
-
-        // Live total
         document.querySelectorAll(".qty-wrapper input").forEach(input => {
           input.addEventListener("input", updateTotal);
-          input.addEventListener("change", updateTotal);
         });
-
       } catch (err) {
-        console.error(err);
-        listEl.innerHTML = `<div class="error-load">無法載入產品資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>`;
+        listEl.innerHTML = `<div class="error-load">載入失敗</div>`;
       }
     }
 
     function updateTotal() {
       let total = 0;
       document.querySelectorAll(".qty-wrapper input").forEach(input => {
-        const qty = parseInt(input.value, 10) || 0;
-        const price = parseFloat(input.dataset.price) || 0;
-        // clamp to stock
-        const max = parseInt(input.dataset.stock, 10) || 0;
-        if (qty > max) input.value = max;
-        total += (parseInt(input.value, 10) || 0) * price;
+        const qty = parseInt(input.value) || 0;
+        total += qty * (parseFloat(input.dataset.price) || 0);
       });
-      document.getElementById("totalPrice").textContent = `$${total.toFixed(2)}`;
+      document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
     }
 
-    // Same simple success behaviour as your old working page
-    document.getElementById("orderForm").addEventListener("submit", function() {
-      setTimeout(function() {
-        const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請到 Google Sheet 確認資料。";
-        msg.className = "message success";
-        document.getElementById("orderForm").reset();
-        updateTotal();
-      }, 1000);
+    // Real submission with fetch – shows the actual reply from Apps Script
+    document.getElementById("orderForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const msg = document.getElementById("message");
+      msg.style.display = "none";
+
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        const text = await res.text();
+        console.log("Raw response:", text);
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { status: "unknown", message: text };
+        }
+
+        if (data.status === "success") {
+          msg.textContent = "✅ 真正成功！資料已寫入 Google Sheet";
+          msg.className = "message success";
+          this.reset();
+          updateTotal();
+        } else {
+          msg.textContent = "❌ 失敗\n" + (data.message || text);
+          msg.className = "message error";
+        }
+      } catch (err) {
+        msg.textContent = "❌ 網絡或 CORS 錯誤\n" + err.message;
+        msg.className = "message error";
+        console.error(err);
+      }
     });
 
     loadProducts();
