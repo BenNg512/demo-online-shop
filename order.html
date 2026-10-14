@@ -203,19 +203,39 @@
       background: #eff6ff;
     }
 
-    .message {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 10px;
-      text-align: center;
+    /* Success page */
+    .success-page {
       display: none;
-      font-size: 15px;
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-top: 20px;
     }
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
+    .success-page.show {
       display: block;
     }
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .success-page h2 {
+      font-size: 28px;
+      color: #166534;
+      margin-bottom: 12px;
+    }
+    .success-page p {
+      color: #555;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .countdown {
+      margin-top: 24px;
+      font-size: 15px;
+      color: #666;
+    }
+
     .loading, .error-load {
       text-align: center;
       padding: 40px 20px;
@@ -252,47 +272,65 @@
   </div>
 
   <div class="container">
-    <h1>下單表格</h1>
-    <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
 
-    <form id="orderForm"
-          action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
-          method="POST"
-          target="hidden_iframe">
+    <!-- ========== ORDER FORM ========== -->
+    <div id="orderSection">
+      <h1>下單表格</h1>
+      <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
 
-      <!-- Hidden fields for Google Sheet -->
-      <input type="hidden" name="priceTotal" id="totalHidden" value="0">
-      <input type="hidden" name="orderItems" id="orderContentHidden" value="">
+      <form id="orderForm"
+            action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
+            method="POST"
+            target="hidden_iframe">
 
-      <div class="card">
-        <h2>聯絡資料</h2>
-        <label>稱呼 *</label>
-        <input type="text" name="name" required placeholder="例如：Ben">
+        <!-- Hidden fields for Google Sheet -->
+        <input type="hidden" name="priceTotal" id="totalHidden" value="0">
+        <input type="hidden" name="orderItems" id="orderContentHidden" value="">
 
-        <label>Email *</label>
-        <input type="email" name="email" required placeholder="example@gmail.com">
+        <div class="card">
+          <h2>聯絡資料</h2>
+          <label>稱呼 *</label>
+          <input type="text" name="name" required placeholder="例如：Ben">
 
-        <label>電話號碼</label>
-        <input type="tel" name="phoneNo" placeholder="例如：91234567">
+          <label>Email *</label>
+          <input type="email" name="email" required placeholder="example@gmail.com">
+
+          <label>電話號碼</label>
+          <input type="tel" name="phoneNo" placeholder="例如：91234567">
+        </div>
+
+        <div class="card">
+          <h2>選擇產品</h2>
+          <div id="productList" class="loading">正在載入產品資料...</div>
+        </div>
+
+        <div class="total-bar">
+          <span>合計</span>
+          <span class="total-price" id="totalPrice">$0.00</span>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit">提交訂單</button>
+          <a href="https://benng512.github.io/demo-online-shop/" class="btn-home">← 返回主頁</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========== SUCCESS PAGE ========== -->
+    <div id="successPage" class="success-page">
+      <div class="success-icon">✅</div>
+      <h2>訂單已成功提交！</h2>
+      <p>感謝您的訂購。</p>
+      <p>我們會盡快處理您的訂單。</p>
+      <div class="countdown">
+        <span id="countdownText">5</span> 秒後自動返回主頁...
       </div>
+      <br>
+      <a href="https://benng512.github.io/demo-online-shop/" class="btn-home" style="max-width: 280px; margin: 0 auto;">
+        立即返回主頁
+      </a>
+    </div>
 
-      <div class="card">
-        <h2>選擇產品</h2>
-        <div id="productList" class="loading">正在載入產品資料...</div>
-      </div>
-
-      <div class="total-bar">
-        <span>合計</span>
-        <span class="total-price" id="totalPrice">$0.00</span>
-      </div>
-
-      <div class="btn-group">
-        <button type="submit">提交訂單</button>
-        <a href="https://benng512.github.io/demo-online-shop/" class="btn-home">← 返回主頁</a>
-      </div>
-    </form>
-
-    <div id="message" class="message"></div>
   </div>
 
   <footer>
@@ -304,6 +342,7 @@
 
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
+    const HOME_URL = "https://benng512.github.io/demo-online-shop/";
 
     function escapeHtml(str) {
       return String(str)
@@ -333,11 +372,10 @@
 
           // ===== Filtering rules =====
           if (!name) return;
-          if (active !== "yes") return;                                    // only active = yes
-          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return; // blank price
+          if (active !== "yes") return;
+          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
           const price = Number(priceRaw);
-          if (isNaN(price) || price < 0) return;                           // negative → hide
-          // price === 0 is allowed and will be shown
+          if (isNaN(price) || price < 0) return;
 
           const isOut = stock <= 0;
 
@@ -395,27 +433,35 @@
         items.push(`${name} ： $${price.toFixed(2)} x ${qty}`);
       });
 
-      // Update visible total
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
-
-      // Update hidden fields
       document.getElementById("totalHidden").value = total.toFixed(2);
-      
-      // Multi-line format for 訂單內容
       document.getElementById("orderContentHidden").value = items.join("\n");
     }
 
-    // Before submit, make sure the latest values are written
+    // Handle form submission
     document.getElementById("orderForm").addEventListener("submit", function() {
       updateTotalAndContent();
 
+      // Hide the form and show success page after a short delay
       setTimeout(function() {
-        const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請到等候確認資料。";
-        msg.className = "message success";
-        document.getElementById("orderForm").reset();
-        updateTotalAndContent();
-      }, 1000);
+        document.getElementById("orderSection").style.display = "none";
+        document.getElementById("successPage").classList.add("show");
+
+        // Countdown + redirect
+        let seconds = 5;
+        const countdownEl = document.getElementById("countdownText");
+
+        const timer = setInterval(function() {
+          seconds--;
+          countdownEl.textContent = seconds;
+
+          if (seconds <= 0) {
+            clearInterval(timer);
+            window.location.href = HOME_URL;
+          }
+        }, 1000);
+
+      }, 800);
     });
 
     loadProducts();
