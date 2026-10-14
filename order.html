@@ -194,12 +194,9 @@
 
   <div class="top-banner">限時優惠，所有產品10折！</div>
 
-  <div class="header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
-      <div class="site-title">買咩都唔會出貨</div>
-    </div>
-    <a href="https://benng512.github.io/demo-online-shop/" style="display: inline-block; background: #e8f0fe; color: #1d4ed8; text-decoration: none; padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid #dbeafe;">返回首頁</a>
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+    <div class="site-title">買咩都唔會出貨</div>
   </div>
 
   <div class="container">
@@ -211,8 +208,9 @@
           method="POST"
           target="hidden_iframe">
 
-      <!-- Hidden field for total price → this will be saved to the "合計" column -->
+      <!-- Hidden fields that will be saved to Google Sheet -->
       <input type="hidden" name="合計" id="totalHidden" value="0">
+      <input type="hidden" name="訂單內容" id="orderContentHidden" value="">
 
       <div class="card">
         <h2>聯絡資料</h2>
@@ -299,7 +297,8 @@
                        min="0"
                        ${isOut ? 'disabled' : `max="${stock}"`}
                        value="0"
-                       data-price="${price}">
+                       data-price="${price}"
+                       data-name="${name}">
               </div>
             </div>`;
         });
@@ -307,8 +306,8 @@
         listEl.innerHTML = html || `<div class="error-load">暫時沒有產品</div>`;
 
         document.querySelectorAll(".qty-wrapper input").forEach(input => {
-          input.addEventListener("input", updateTotal);
-          input.addEventListener("change", updateTotal);
+          input.addEventListener("input", updateTotalAndContent);
+          input.addEventListener("change", updateTotalAndContent);
         });
 
       } catch (err) {
@@ -317,31 +316,39 @@
       }
     }
 
-    function updateTotal() {
+    function updateTotalAndContent() {
       let total = 0;
+      const items = [];
+
       document.querySelectorAll(".qty-wrapper input").forEach(input => {
         const qty = parseInt(input.value) || 0;
-        total += qty * (parseFloat(input.dataset.price) || 0);
+        if (qty <= 0) return;
+
+        const price = parseFloat(input.dataset.price) || 0;
+        const name = input.dataset.name || input.name;
+
+        total += qty * price;
+        items.push(`${name} x $${price.toFixed(2)} x ${qty}`);
       });
 
       // Update visible total
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
 
-      // Update the hidden field that will be sent to Google Sheet
+      // Update hidden fields that will be sent to Google Sheet
       document.getElementById("totalHidden").value = total.toFixed(2);
+      document.getElementById("orderContentHidden").value = items.join(" | ");
     }
 
-    // Show success message (same as your old working page)
+    // Before submit, make sure the latest values are written
     document.getElementById("orderForm").addEventListener("submit", function() {
-      // Make sure the latest total is written before submitting
-      updateTotal();
+      updateTotalAndContent();
 
       setTimeout(function() {
         const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請等待確認資料。";
+        msg.textContent = "✅ 訂單已提交！請到等候確認資料。";
         msg.className = "message success";
         document.getElementById("orderForm").reset();
-        updateTotal();
+        updateTotalAndContent();
       }, 1000);
     });
 
