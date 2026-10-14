@@ -33,15 +33,8 @@
       padding: 16px 24px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
     }
 
     .header img {
@@ -57,20 +50,26 @@
       color: #222;
     }
 
-    .home-button {
-      display: inline-block;
-      background: #e8f0fe;
-      color: #1d4ed8;
+    /* Fixed Order Now button */
+    .fixed-order-btn {
+      position: fixed;
+      top: 70px;               /* below the top banner + header */
+      right: 20px;
+      z-index: 1000;
+      background: #ffb703;
+      color: #111;
       text-decoration: none;
-      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 20px;
       border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      border: 1px solid #dbeafe;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .home-button:hover {
-      background: #dbeafe;
+    .fixed-order-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
     }
 
     /* Hero section */
@@ -91,30 +90,6 @@
       font-weight: 700;
       font-size: 42px;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-
-    .hero-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .cta-button {
-      display: inline-block;
-      background: #ffb703;
-      color: #111;
-      text-decoration: none;
-      font-weight: 700;
-      padding: 12px 24px;
-      border-radius: 999px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
 
     /* Main content */
@@ -220,6 +195,18 @@
     footer p {
       margin: 4px 0;
     }
+
+    /* Mobile adjustment for fixed button */
+    @media (max-width: 600px) {
+      .fixed-order-btn {
+        top: auto;
+        bottom: 20px;
+        right: 16px;
+        left: 16px;
+        text-align: center;
+        border-radius: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -231,19 +218,18 @@
 
   <!-- Header -->
   <div class="header">
-    <div class="header-left">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
-      <div class="site-title">買咩都唔會出貨</div>
-    </div>
-    <a class="home-button" href="https://benng512.github.io/demo-online-shop/">返回首頁</a>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+    <div class="site-title">買咩都唔會出貨</div>
   </div>
+
+  <!-- Fixed Order Now button -->
+  <a href="https://benng512.github.io/demo-online-shop/order" class="fixed-order-btn">
+    立即下單
+  </a>
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-content">
-      <h1>This page is for demo</h1>
-      <a class="cta-button" href="https://benng512.github.io/demo-online-shop/order">前往訂單頁面</a>
-    </div>
+    <h1>This page is for demo</h1>
   </div>
 
   <!-- Product List -->
@@ -282,12 +268,12 @@
           const active   = cells[5] ? (cells[5].v || "").toString().toLowerCase().trim() : "";
 
           // ===== Filtering rules =====
-          if (!name) return;                                    // no name
-          if (active !== "yes") return;                         // only active = yes
-          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return; // blank price
+          if (!name) return;
+          if (active !== "yes") return;
+          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
           const price = Number(priceRaw);
-          if (isNaN(price) || price < 0) return;                // negative or invalid → hide
-          // price === 0 is allowed and will be shown
+          if (isNaN(price) || price < 0) return;
+          // price === 0 is allowed
 
           const stockClass = stock <= 0 ? "out" : "";
           const stockText  = stock <= 0 ? "暫時缺貨" : `存貨：${stock}`;

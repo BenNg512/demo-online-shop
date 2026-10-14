@@ -3,22 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>買咩都唔會出貨</title>
+  <title>下單表格 - 買咩都唔會出貨</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
     }
-
-    /* Top banner */
     .top-banner {
       background-color: rgb(11, 83, 148);
       color: white;
@@ -26,163 +19,210 @@
       padding: 12px 16px;
       font-size: 15px;
     }
-
-    /* Header */
     .header {
       background: white;
       padding: 16px 24px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
     }
-
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
     .header img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       object-fit: cover;
     }
-
     .header .site-title {
       font-size: 18px;
       font-weight: 600;
       color: #222;
     }
-
-    /* Fixed Order Now button */
-    .fixed-order-btn {
-      position: fixed;
-      top: 70px;               /* below the top banner + header */
-      right: 20px;
-      z-index: 1000;
-      background: #ffb703;
-      color: #111;
+    .home-button {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #1d4ed8;
       text-decoration: none;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 12px 20px;
+      padding: 8px 14px;
       border-radius: 999px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #dbeafe;
     }
-
-    .fixed-order-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    .home-button:hover {
+      background: #dbeafe;
     }
-
-    /* Hero section */
-    .hero {
-      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
-                  url('https://ssl.gstatic.com/atari/images/simple-header-blended-small.png') center/cover;
-      height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .hero h1 {
-      color: #ffff00;
-      font-family: Impact, Arial, sans-serif;
-      font-style: italic;
-      font-weight: 700;
-      font-size: 42px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-
-    /* Main content */
     .container {
-      max-width: 1200px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 32px 20px 60px;
     }
-
-    h2 {
+    h1 {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 8px;
       font-size: 28px;
       color: #1a1a1a;
     }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 32px;
+      font-size: 15px;
     }
-
     .card {
       background: white;
       border-radius: 12px;
-      overflow: hidden;
+      padding: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 24px;
     }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 18px;
+      color: #1a1a1a;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
     }
-
-    .photo {
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"] {
       width: 100%;
-      height: 180px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .product-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .product-item:last-child { border-bottom: none; }
+    .product-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
       object-fit: cover;
       background: #eee;
-      display: block;
+      flex-shrink: 0;
     }
-
     .no-photo {
-      width: 100%;
-      height: 180px;
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
       background: #e9ecef;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #999;
-      font-size: 14px;
+      font-size: 11px;
+      flex-shrink: 0;
     }
-
-    .info {
-      padding: 16px;
+    .product-info { flex: 1; min-width: 0; }
+    .product-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+    .product-price { color: #e63946; font-weight: 600; font-size: 15px; }
+    .product-stock { font-size: 13px; color: #555; margin-top: 2px; }
+    .product-stock.out { color: #e63946; font-weight: 500; }
+    .qty-wrapper { width: 100px; flex-shrink: 0; }
+    .qty-wrapper input { margin-bottom: 0; text-align: center; }
+    .qty-wrapper input:disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
     }
-
-    .name {
+    .total-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 8px;
     }
+    .total-price { color: #e63946; font-size: 22px; }
 
-    .price {
-      font-size: 20px;
-      color: #e63946;
-      font-weight: bold;
-      margin-bottom: 6px;
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
     }
-
-    .stock {
-      font-size: 14px;
-      color: #555;
+    button[type="submit"] {
+      width: 100%;
+      padding: 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
     }
+    button[type="submit"]:hover { background: #1d4ed8; }
 
-    .stock.out {
-      color: #e63946;
-      font-weight: 500;
-    }
-
-    .loading, .error {
+    .btn-home {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: white;
+      color: #2563eb;
+      border: 2px solid #2563eb;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
       text-align: center;
-      padding: 40px;
-      font-size: 18px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-home:hover {
+      background: #eff6ff;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      font-size: 15px;
+    }
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+      display: block;
+    }
+    .loading, .error-load {
+      text-align: center;
+      padding: 40px 20px;
       color: #666;
+      font-size: 16px;
     }
-
-    .error {
-      color: #e63946;
-    }
-
-    /* Footer */
+    .error-load { color: #e63946; }
     footer {
       background: #e0f7fa;
       padding: 24px;
@@ -191,120 +231,194 @@
       color: #333;
       margin-top: 40px;
     }
-
-    footer p {
-      margin: 4px 0;
-    }
-
-    /* Mobile adjustment for fixed button */
-    @media (max-width: 600px) {
-      .fixed-order-btn {
-        top: auto;
-        bottom: 20px;
-        right: 16px;
-        left: 16px;
-        text-align: center;
-        border-radius: 12px;
-      }
+    footer p { margin: 4px 0; }
+    @media (max-width: 520px) {
+      .product-item { flex-wrap: wrap; }
+      .qty-wrapper { width: 100%; margin-top: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Banner -->
-  <div class="top-banner">
-    限時優惠，所有產品10折！
-  </div>
+  <div class="top-banner">限時優惠，所有產品10折！</div>
 
   <!-- Header -->
   <div class="header">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
-    <div class="site-title">買咩都唔會出貨</div>
+    <div class="header-left">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+      <div class="site-title">買咩都唔會出貨</div>
+    </div>
+    <a class="home-button" href="https://benng512.github.io/demo-online-shop/">返回首頁</a>
   </div>
 
-  <!-- Fixed Order Now button -->
-  <a href="https://benng512.github.io/demo-online-shop/order" class="fixed-order-btn">
-    立即下單
-  </a>
-
-  <!-- Hero -->
-  <div class="hero">
-    <h1>This page is for demo</h1>
-  </div>
-
-  <!-- Product List -->
   <div class="container">
-    <h2>最新產品價目</h2>
-    <div id="output" class="loading">正在載入產品資料...</div>
+    <h1>下單表格</h1>
+    <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
+
+    <form id="orderForm"
+          action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
+          method="POST"
+          target="hidden_iframe">
+
+      <!-- Hidden fields for Google Sheet -->
+      <input type="hidden" name="priceTotal" id="totalHidden" value="0">
+      <input type="hidden" name="orderItems" id="orderContentHidden" value="">
+
+      <div class="card">
+        <h2>聯絡資料</h2>
+        <label>稱呼 *</label>
+        <input type="text" name="name" required placeholder="例如：Ben">
+
+        <label>Email *</label>
+        <input type="email" name="email" required placeholder="example@gmail.com">
+
+        <label>電話號碼</label>
+        <input type="tel" name="phoneNo" placeholder="例如：91234567">
+      </div>
+
+      <div class="card">
+        <h2>選擇產品</h2>
+        <div id="productList" class="loading">正在載入產品資料...</div>
+      </div>
+
+      <div class="total-bar">
+        <span>合計</span>
+        <span class="total-price" id="totalPrice">$0.00</span>
+      </div>
+
+      <div class="btn-group">
+        <button type="submit">提交訂單</button>
+        <a href="https://benng512.github.io/demo-online-shop/" class="btn-home">← 返回主頁</a>
+      </div>
+    </form>
+
+    <div id="message" class="message"></div>
   </div>
 
-  <!-- Footer -->
   <footer>
     <p>Contact Us: +852-12345678</p>
     <p>Email: abc@gmail.com</p>
   </footer>
 
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
+
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
 
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
     async function loadProducts() {
+      const listEl = document.getElementById("productList");
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
-
-        // Clean the gviz response
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const rows = json.table.rows;
 
-        let html = `<div class="products">`;
-
+        let html = "";
         rows.forEach(row => {
           const cells = row.c;
 
           const name     = cells[1] ? (cells[1].v || "") : "";
           const priceRaw = cells[2] ? cells[2].v : null;
-          const stock    = cells[3] ? (cells[3].v || 0) : 0;
-          const photoUrl = cells[4] ? (cells[4].v || "") : "";
+          const stock    = cells[3] ? Number(cells[3].v || 0) : 0;
+          const photo    = cells[4] ? (cells[4].v || "") : "";
           const active   = cells[5] ? (cells[5].v || "").toString().toLowerCase().trim() : "";
 
           // ===== Filtering rules =====
           if (!name) return;
-          if (active !== "yes") return;
-          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
+          if (active !== "yes") return;                                    // only active = yes
+          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return; // blank price
           const price = Number(priceRaw);
-          if (isNaN(price) || price < 0) return;
-          // price === 0 is allowed
+          if (isNaN(price) || price < 0) return;                           // negative → hide
+          // price === 0 is allowed and will be shown
 
-          const stockClass = stock <= 0 ? "out" : "";
-          const stockText  = stock <= 0 ? "暫時缺貨" : `存貨：${stock}`;
+          const isOut = stock <= 0;
 
           html += `
-            <div class="card">
-              ${photoUrl 
-                ? `<img class="photo" src="${photoUrl}" alt="${name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div class=\\'no-photo\\'>No Photo</div>')">`
-                : `<div class="no-photo">No Photo</div>`
-              }
-              <div class="info">
-                <div class="name">${name}</div>
-                <div class="price">$${price.toFixed(2)}</div>
-                <div class="stock ${stockClass}">${stockText}</div>
+            <div class="product-item">
+              ${photo
+                ? `<img class="product-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" loading="lazy"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                   <div class="no-photo" style="display:none;">No Photo</div>`
+                : `<div class="no-photo">No Photo</div>`}
+              <div class="product-info">
+                <div class="product-name">${escapeHtml(name)}</div>
+                <div class="product-price">$${price.toFixed(2)}</div>
+                <div class="product-stock ${isOut ? 'out' : ''}">
+                  ${isOut ? '暫時缺貨' : '存貨：' + stock}
+                </div>
               </div>
-            </div>
-          `;
+              <div class="qty-wrapper">
+                <input type="number"
+                       name="${name}"
+                       min="0"
+                       ${isOut ? 'disabled' : `max="${stock}"`}
+                       value="0"
+                       data-price="${price}"
+                       data-name="${name}">
+              </div>
+            </div>`;
         });
 
-        html += `</div>`;
-        document.getElementById("output").innerHTML = html;
+        listEl.innerHTML = html || `<div class="error-load">暫時沒有產品</div>`;
+
+        document.querySelectorAll(".qty-wrapper input").forEach(input => {
+          input.addEventListener("input", updateTotalAndContent);
+          input.addEventListener("change", updateTotalAndContent);
+        });
 
       } catch (err) {
         console.error(err);
-        document.getElementById("output").innerHTML = 
-          `<div class="error">無法載入資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>`;
+        listEl.innerHTML = `<div class="error-load">無法載入產品資料</div>`;
       }
     }
 
+    function updateTotalAndContent() {
+      let total = 0;
+      const items = [];
+
+      document.querySelectorAll(".qty-wrapper input").forEach(input => {
+        const qty = parseInt(input.value) || 0;
+        if (qty <= 0) return;
+
+        const price = parseFloat(input.dataset.price) || 0;
+        const name = input.dataset.name || input.name;
+
+        total += qty * price;
+        items.push(`${name} ： $${price.toFixed(2)} x ${qty}`);
+      });
+
+      // Update visible total
+      document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
+
+      // Update hidden fields
+      document.getElementById("totalHidden").value = total.toFixed(2);
+      
+      // Multi-line format for 訂單內容
+      document.getElementById("orderContentHidden").value = items.join("\n");
+    }
+
+    // Before submit, make sure the latest values are written
+    document.getElementById("orderForm").addEventListener("submit", function() {
+      updateTotalAndContent();
+
+      setTimeout(function() {
+        const msg = document.getElementById("message");
+        msg.textContent = "✅ 訂單已提交！請到等候確認資料。";
+        msg.className = "message success";
+        document.getElementById("orderForm").reset();
+        updateTotalAndContent();
+      }, 1000);
+    });
+
     loadProducts();
   </script>
-
 </body>
 </html>
