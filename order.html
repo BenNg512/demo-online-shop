@@ -203,11 +203,13 @@
     <h1>下單表格</h1>
     <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
 
-    <!-- Important: method="POST" + target="hidden_iframe"  →  this bypasses CORS -->
     <form id="orderForm"
           action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
           method="POST"
           target="hidden_iframe">
+
+      <!-- Hidden field for total price → this will be saved to the "合計" column -->
+      <input type="hidden" name="合計" id="totalHidden" value="0">
 
       <div class="card">
         <h2>聯絡資料</h2>
@@ -242,7 +244,6 @@
     <p>Email: abc@gmail.com</p>
   </footer>
 
-  <!-- Hidden iframe – this is the key to make it work -->
   <iframe name="hidden_iframe" style="display:none;"></iframe>
 
   <script>
@@ -319,14 +320,22 @@
         const qty = parseInt(input.value) || 0;
         total += qty * (parseFloat(input.dataset.price) || 0);
       });
+
+      // Update visible total
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
+
+      // Update the hidden field that will be sent to Google Sheet
+      document.getElementById("totalHidden").value = total.toFixed(2);
     }
 
-    // Same simple success behaviour as your old working page
+    // Show success message (same as your old working page)
     document.getElementById("orderForm").addEventListener("submit", function() {
+      // Make sure the latest total is written before submitting
+      updateTotal();
+
       setTimeout(function() {
         const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請到 Google Sheet 確認資料。";
+        msg.textContent = "✅ 訂單已提交！請等待確認資料。";
         msg.className = "message success";
         document.getElementById("orderForm").reset();
         updateTotal();
