@@ -24,14 +24,8 @@
       padding: 16px 24px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
     }
     .header img {
       width: 40px;
@@ -43,20 +37,6 @@
       font-size: 18px;
       font-weight: 600;
       color: #222;
-    }
-    .home-button {
-      display: inline-block;
-      background: #e8f0fe;
-      color: #1d4ed8;
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      border: 1px solid #dbeafe;
-    }
-    .home-button:hover {
-      background: #dbeafe;
     }
     .container {
       max-width: 720px;
@@ -214,12 +194,12 @@
 
   <div class="top-banner">限時優惠，所有產品10折！</div>
 
-  <div class="header">
-    <div class="header-left">
+  <div class="header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
       <div class="site-title">買咩都唔會出貨</div>
     </div>
-    <a class="home-button" href="/">返回首頁</a>
+    <a href="https://benng512.github.io/demo-online-shop/" style="display: inline-block; background: #e8f0fe; color: #1d4ed8; text-decoration: none; padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid #dbeafe;">返回首頁</a>
   </div>
 
   <div class="container">
