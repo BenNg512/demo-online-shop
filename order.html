@@ -300,11 +300,20 @@
         let html = "";
         rows.forEach(row => {
           const cells = row.c;
-          const name  = cells[1] ? (cells[1].v || "") : "";
-          const price = cells[2] ? Number(cells[2].v || 0) : 0;
-          const stock = cells[3] ? Number(cells[3].v || 0) : 0;
-          const photo = cells[4] ? (cells[4].v || "") : "";
+
+          const name     = cells[1] ? (cells[1].v || "") : "";
+          const priceRaw = cells[2] ? cells[2].v : null;
+          const stock    = cells[3] ? Number(cells[3].v || 0) : 0;
+          const photo    = cells[4] ? (cells[4].v || "") : "";
+          const active   = cells[5] ? (cells[5].v || "").toString().toLowerCase().trim() : "";
+
+          // ===== Filtering rules =====
           if (!name) return;
+          if (active !== "yes") return;                                    // only active = yes
+          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return; // blank price
+          const price = Number(priceRaw);
+          if (isNaN(price) || price < 0) return;                           // negative → hide
+          // price === 0 is allowed and will be shown
 
           const isOut = stock <= 0;
 

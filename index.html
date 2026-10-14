@@ -250,11 +250,18 @@
           const cells = row.c;
 
           const name     = cells[1] ? (cells[1].v || "") : "";
-          const price    = cells[2] ? (cells[2].v || "") : "";
+          const priceRaw = cells[2] ? cells[2].v : null;
           const stock    = cells[3] ? (cells[3].v || 0) : 0;
           const photoUrl = cells[4] ? (cells[4].v || "") : "";
+          const active   = cells[5] ? (cells[5].v || "").toString().toLowerCase().trim() : "";
 
-          if (!name) return;
+          // ===== Filtering rules =====
+          if (!name) return;                                    // no name
+          if (active !== "yes") return;                         // only active = yes
+          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return; // blank price
+          const price = Number(priceRaw);
+          if (isNaN(price) || price < 0) return;                // negative or invalid → hide
+          // price === 0 is allowed and will be shown
 
           const stockClass = stock <= 0 ? "out" : "";
           const stockText  = stock <= 0 ? "暫時缺貨" : `存貨：${stock}`;
@@ -267,7 +274,7 @@
               }
               <div class="info">
                 <div class="name">${name}</div>
-                <div class="price">$${Number(price).toFixed(2)}</div>
+                <div class="price">$${price.toFixed(2)}</div>
                 <div class="stock ${stockClass}">${stockText}</div>
               </div>
             </div>
