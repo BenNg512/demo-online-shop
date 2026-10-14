@@ -242,6 +242,7 @@
 
   <div class="top-banner">限時優惠，所有產品10折！</div>
 
+  <!-- Header -->
   <div class="header">
     <div class="header-left">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
@@ -410,7 +411,7 @@
 
       setTimeout(function() {
         const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請到 Google Sheet 確認資料。";
+        msg.textContent = "✅ 訂單已提交！請到等候確認資料。";
         msg.className = "message success";
         document.getElementById("orderForm").reset();
         updateTotalAndContent();
