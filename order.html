@@ -208,7 +208,7 @@
           method="POST"
           target="hidden_iframe">
 
-      <!-- Hidden fields that will be saved to Google Sheet -->
+      <!-- Hidden fields for Google Sheet -->
       <input type="hidden" name="合計" id="totalHidden" value="0">
       <input type="hidden" name="訂單內容" id="orderContentHidden" value="">
 
@@ -334,9 +334,11 @@
       // Update visible total
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
 
-      // Update hidden fields that will be sent to Google Sheet
+      // Update hidden fields
       document.getElementById("totalHidden").value = total.toFixed(2);
-      document.getElementById("orderContentHidden").value = items.join(" | ");
+      
+      // Multi-line format for 訂單內容
+      document.getElementById("orderContentHidden").value = items.join("\n");
     }
 
     // Before submit, make sure the latest values are written
@@ -345,7 +347,7 @@
 
       setTimeout(function() {
         const msg = document.getElementById("message");
-        msg.textContent = "✅ 訂單已提交！請到等候確認資料。";
+        msg.textContent = "✅ 訂單已提交！請到 Google Sheet 確認資料。";
         msg.className = "message success";
         document.getElementById("orderForm").reset();
         updateTotalAndContent();
