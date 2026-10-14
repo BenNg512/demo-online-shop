@@ -24,8 +24,14 @@
       padding: 16px 24px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .header img {
       width: 40px;
@@ -37,6 +43,20 @@
       font-size: 18px;
       font-weight: 600;
       color: #222;
+    }
+    .home-button {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #1d4ed8;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #dbeafe;
+    }
+    .home-button:hover {
+      background: #dbeafe;
     }
     .container {
       max-width: 720px;
@@ -223,8 +243,11 @@
   <div class="top-banner">限時優惠，所有產品10折！</div>
 
   <div class="header">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
-    <div class="site-title">買咩都唔會出貨</div>
+    <div class="header-left">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+      <div class="site-title">買咩都唔會出貨</div>
+    </div>
+    <a class="home-button" href="https://benng512.github.io/demo-online-shop/">返回首頁</a>
   </div>
 
   <div class="container">
@@ -237,19 +260,19 @@
           target="hidden_iframe">
 
       <!-- Hidden fields for Google Sheet -->
-      <input type="hidden" name="合計" id="totalHidden" value="0">
-      <input type="hidden" name="訂單內容" id="orderContentHidden" value="">
+      <input type="hidden" name="priceTotal" id="totalHidden" value="0">
+      <input type="hidden" name="orderItems" id="orderContentHidden" value="">
 
       <div class="card">
         <h2>聯絡資料</h2>
         <label>稱呼 *</label>
-        <input type="text" name="稱呼" required placeholder="例如：Ben">
+        <input type="text" name="name" required placeholder="例如：Ben">
 
         <label>Email *</label>
         <input type="email" name="email" required placeholder="example@gmail.com">
 
         <label>電話號碼</label>
-        <input type="tel" name="電話號碼" placeholder="例如：91234567">
+        <input type="tel" name="phoneNo" placeholder="例如：91234567">
       </div>
 
       <div class="card">
