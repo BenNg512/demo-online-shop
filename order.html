@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下單表格 - 買咩都唔會出貨</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* Top banner - same as product page */
+    .top-banner {
+      background-color: rgb(11, 83, 148);
+      color: white;
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 15px;
+    }
+
+    /* Header - same as product page */
+    .header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    .header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .header .site-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    /* Main container */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 28px;
+      color: #1a1a1a;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 32px;
+      font-size: 15px;
+    }
+
+    /* Customer info card */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 18px;
+      color: #1a1a1a;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    input.error {
+      border-color: #e63946;
+    }
+
+    /* Product list */
+    .product-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .product-item:last-child {
+      border-bottom: none;
+    }
+    .product-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #eee;
+      flex-shrink: 0;
+    }
+    .no-photo {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      background: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .product-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .product-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .product-price {
+      color: #e63946;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .product-stock {
+      font-size: 13px;
+      color: #555;
+      margin-top: 2px;
+    }
+    .product-stock.out {
+      color: #e63946;
+      font-weight: 500;
+    }
+    .qty-wrapper {
+      width: 100px;
+      flex-shrink: 0;
+    }
+    .qty-wrapper input {
+      margin-bottom: 0;
+      text-align: center;
+    }
+    .qty-wrapper input:disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    /* Total & submit */
+    .total-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .total-price {
+      color: #e63946;
+      font-size: 22px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button[type="submit"]:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+    button[type="submit"]:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      font-size: 15px;
+    }
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+      display: block;
+    }
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+
+    .loading, .error-load {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+    }
+    .error-load {
+      color: #e63946;
+    }
+
+    /* Footer */
+    footer {
+      background: #e0f7fa;
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+      margin-top: 40px;
+    }
+    footer p {
+      margin: 4px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      .product-item {
+        flex-wrap: wrap;
+      }
+      .qty-wrapper {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Banner -->
+  <div class="top-banner">
+    限時優惠，所有產品10折！
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+    <div class="site-title">買咩都唔會出貨</div>
+  </div>
+
+  <div class="container">
+    <h1>下單表格</h1>
+    <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
+
+    <form id="orderForm"
+          action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
+          method="POST"
+          target="hidden_iframe"
+          novalidate>
+
+      <!-- Customer Info -->
+      <div class="card">
+        <h2>聯絡資料</h2>
+
+        <label for="name">稱呼 *</label>
+        <input type="text" id="name" name="稱呼" required placeholder="例如：Ben" autocomplete="name">
+
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required placeholder="example@gmail.com" autocomplete="email">
+
+        <label for="phone">電話號碼</label>
+        <input type="tel" id="phone" name="電話號碼" placeholder="例如：91234567" autocomplete="tel">
+      </div>
+
+      <!-- Products -->
+      <div class="card">
+        <h2>選擇產品</h2>
+        <div id="productList" class="loading">正在載入產品資料...</div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-bar">
+        <span>合計</span>
+        <span class="total-price" id="totalPrice">$0.00</span>
+      </div>
+
+      <button type="submit" id="submitBtn" disabled>提交訂單</button>
+    </form>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Contact Us: +852-12345678</p>
+    <p>Email: abc@gmail.com</p>
+  </footer>
+
+  <!-- Hidden iframe -->
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
+
+    let products = []; // { name, price, stock, photo }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function loadProducts() {
+      const listEl = document.getElementById("productList");
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const rows = json.table.rows;
+
+        products = [];
+        rows.forEach(row => {
+          const cells = row.c;
+          const name  = cells[1] ? (cells[1].v || "") : "";
+          const price = cells[2] ? Number(cells[2].v || 0) : 0;
+          const stock = cells[3] ? Number(cells[3].v || 0) : 0;
+          const photo = cells[4] ? (cells[4].v || "") : "";
+          if (!name) return;
+          products.push({ name, price, stock, photo });
+        });
+
+        renderProducts();
+      } catch (err) {
+        console.error(err);
+        listEl.innerHTML = `<div class="error-load">無法載入產品資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>`;
+      }
+    }
+
+    function renderProducts() {
+      const listEl = document.getElementById("productList");
+      if (products.length === 0) {
+        listEl.innerHTML = `<div class="error-load">暫時沒有產品</div>`;
+        return;
+      }
+
+      let html = "";
+      products.forEach((p, idx) => {
+        const isOut = p.stock <= 0;
+        const stockText = isOut ? "暫時缺貨" : `存貨：${p.stock}`;
+        const stockClass = isOut ? "out" : "";
+        const disabled = isOut ? "disabled" : "";
+        const maxAttr = isOut ? "" : `max="${p.stock}"`;
+
+        html += `
+          <div class="product-item" data-idx="${idx}">
+            ${p.photo
+              ? `<img class="product-photo" src="${escapeHtml(p.photo)}" alt="${escapeHtml(p.name)}" loading="lazy"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                 <div class="no-photo" style="display:none;">No Photo</div>`
+              : `<div class="no-photo">No Photo</div>`
+            }
+            <div class="product-info">
+              <div class="product-name">${escapeHtml(p.name)}</div>
+              <div class="product-price">$${p.price.toFixed(2)}</div>
+              <div class="product-stock ${stockClass}">${stockText}</div>
+            </div>
+            <div class="qty-wrapper">
+              <input type="number"
+                     name="${escapeHtml(p.name)}"
+                     min="0"
+                     ${maxAttr}
+                     value="0"
+                     ${disabled}
+                     data-price="${p.price}"
+                     data-stock="${p.stock}"
+                     aria-label="${escapeHtml(p.name)} 數量">
+            </div>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html;
+
+      // Attach listeners
+      document.querySelectorAll(".qty-wrapper input").forEach(input => {
+        input.addEventListener("input", onQtyChange);
+        input.addEventListener("change", onQtyChange);
+      });
+    }
+
+    function onQtyChange(e) {
+      const input = e.target;
+      let val = parseInt(input.value, 10);
+      const max = parseInt(input.dataset.stock, 10);
+
+      // Force integer and clamp
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > max) val = max;
+      input.value = val;
+
+      // Visual feedback
+      if (val > max) {
+        input.classList.add("error");
+      } else {
+        input.classList.remove("error");
+      }
+
+      updateTotal();
+      validateForm();
+    }
+
+    function updateTotal() {
+      let total = 0;
+      document.querySelectorAll(".qty-wrapper input").forEach(input => {
+        const qty = parseInt(input.value, 10) || 0;
+        const price = parseFloat(input.dataset.price) || 0;
+        total += qty * price;
+      });
+      document.getElementById("totalPrice").textContent = `$${total.toFixed(2)}`;
+    }
+
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const submitBtn = document.getElementById("submitBtn");
+      const msgEl = document.getElementById("message");
+
+      let hasQty = false;
+      let stockOk = true;
+
+      document.querySelectorAll(".qty-wrapper input").forEach(input => {
+        const qty = parseInt(input.value, 10) || 0;
+        const max = parseInt(input.dataset.stock, 10);
+        if (qty > 0) hasQty = true;
+        if (qty > max) stockOk = false;
+      });
+
+      // Basic email check
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      // Phone optional but if filled, simple check (HK style)
+      const phoneOk = !phone || /^[0-9+\-\s()]{7,15}$/.test(phone);
+
+      const isValid = name.length > 0 && emailOk && phoneOk && hasQty && stockOk;
+
+      submitBtn.disabled = !isValid;
+
+      // Clear previous error message when valid
+      if (isValid && msgEl.classList.contains("error")) {
+        msgEl.style.display = "none";
+        msgEl.className = "message";
+      }
+    }
+
+    // Live validation on customer fields
+    ["name", "email", "phone"].forEach(id => {
+      document.getElementById(id).addEventListener("input", validateForm);
+      document.getElementById(id).addEventListener("blur", validateForm);
+    });
+
+    // Form submit
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      const msgEl = document.getElementById("message");
+
+      // Final client-side checks
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      let hasQty = false;
+      let overStock = false;
+
+      document.querySelectorAll(".qty-wrapper input").forEach(input => {
+        const qty = parseInt(input.value, 10) || 0;
+        const max = parseInt(input.dataset.stock, 10);
+        if (qty > 0) hasQty = true;
+        if (qty > max) overStock = true;
+      });
+
+      if (!name || !email || !hasQty || overStock) {
+        e.preventDefault();
+        msgEl.textContent = overStock
+          ? "❌ 有產品數量超過庫存，請調整後再提交。"
+          : "❌ 請填寫稱呼、Email，並至少選擇一件產品。";
+        msgEl.className = "message error";
+        return;
+      }
+
+      // Show success after short delay (form still submits via iframe)
+      setTimeout(() => {
+        msgEl.textContent = "✅ 訂單已提交！請到 Google Sheet 確認資料。";
+        msgEl.className = "message success";
+        document.getElementById("orderForm").reset();
+        updateTotal();
+        validateForm();
+        // Re-disable out-of-stock inputs after reset
+        document.querySelectorAll(".qty-wrapper input").forEach(input => {
+          if (parseInt(input.dataset.stock, 10) <= 0) {
+            input.disabled = true;
+            input.value = 0;
+          }
+        });
+      }, 800);
+    });
+
+    // Init
+    loadProducts();
+  </script>
+</body>
+</html>
