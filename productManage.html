@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Admin - Login Required</title>
+  <title>Stock Admin</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -33,11 +33,11 @@
       border-radius: 16px;
       padding: 36px 32px;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
     .login-card h1 { font-size: 1.6rem; margin-bottom: 6px; text-align: center; }
-    .login-card .subtitle { text-align: center; color: var(--gray); margin-bottom: 24px; font-size: 0.95rem; }
+    .login-card .subtitle { text-align: center; color: var(--gray); margin-bottom: 24px; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--gray); margin-bottom: 5px; }
     .form-group input {
@@ -84,7 +84,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
       gap: 12px;
     }
@@ -97,38 +97,8 @@
       padding: 7px 14px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.9rem;
     }
     .btn-logout:hover { background: #cbd5e1; }
-
-    .config {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: end;
-    }
-    .config label { font-size: 0.85rem; color: var(--gray); display: block; margin-bottom: 4px; }
-    .config input {
-      padding: 8px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      width: 100%;
-      min-width: 220px;
-    }
-    .config button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-    }
 
     .toolbar {
       display: flex;
@@ -229,56 +199,35 @@
 </head>
 <body>
 
-  <!-- LOGIN SCREEN -->
+  <!-- LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <h1>🔐 Stock Admin</h1>
-      <p class="subtitle">Login with your admin account</p>
-
+      <p class="subtitle">Please login to continue</p>
       <div id="loginError" class="login-error"></div>
-
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="username" required placeholder="Enter username" autocomplete="username">
+          <input type="text" id="username" required placeholder="Username" autocomplete="username">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
+          <input type="password" id="password" required placeholder="Password" autocomplete="current-password">
         </div>
         <button type="submit" class="btn-login" id="loginBtn">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- ADMIN PANEL -->
   <div id="app">
     <div class="container">
       <div class="header">
-        <div>
-          <h1>📦 Stock Management</h1>
-        </div>
+        <h1>📦 Stock Management</h1>
         <div class="user-info">
           <span>Logged in as <strong id="currentUser"></strong> (<span id="currentRole"></span>)</span>
           <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
-      </div>
-
-      <!-- Config -->
-      <div class="config">
-        <div style="flex:1">
-          <label>Login API URL (Admin sheet)</label>
-          <input type="text" id="loginApiUrl" placeholder="https://script.google.com/macros/s/AKfycbyxYblOYDZ4XRaZ-A2INUOIiEFTcKFPr5TKm9UOw_7062yGROBC59wGqcsMp_27JqXUPQ/exec">
-        </div>
-        <div style="flex:1">
-          <label>Stock API URL</label>
-          <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/YYYY/exec">
-        </div>
-        <div style="flex:1">
-          <label>Stock API Token</label>
-          <input type="password" id="apiToken" placeholder="Your stock API token">
-        </div>
-        <button onclick="saveConfig()">Save Config</button>
       </div>
 
       <div id="status" class="status"></div>
@@ -307,7 +256,7 @@
             </tr>
           </thead>
           <tbody id="productTable">
-            <tr><td colspan="7" class="empty">Configure APIs and click Refresh</td></tr>
+            <tr><td colspan="7" class="empty">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -352,27 +301,11 @@
   </div>
 
   <script>
-    // ========== CONFIG ==========
-    let LOGIN_API_URL = localStorage.getItem('login_api_url') || '';
-    let API_URL       = localStorage.getItem('stock_api_url') || '';
-    let API_TOKEN     = localStorage.getItem('stock_api_token') || '';
-    const AUTH_SECRET = '';   // optional – fill if you set AUTH_SECRET in the Admin script
-
-    document.getElementById('loginApiUrl').value = LOGIN_API_URL;
-    document.getElementById('apiUrl').value = API_URL;
-    document.getElementById('apiToken').value = API_TOKEN;
-
-    function saveConfig() {
-      LOGIN_API_URL = document.getElementById('loginApiUrl').value.trim().replace(/\/$/, '');
-      API_URL       = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
-      API_TOKEN     = document.getElementById('apiToken').value.trim();
-
-      localStorage.setItem('login_api_url', LOGIN_API_URL);
-      localStorage.setItem('stock_api_url', API_URL);
-      localStorage.setItem('stock_api_token', API_TOKEN);
-
-      showStatus('Config saved', 'success');
-    }
+    // =============================================
+    //  HARDCODED API URLS  (replace Stock URL)
+    // =============================================
+    const LOGIN_API_URL = 'https://script.google.com/macros/s/AKfycbyxYblOYDZ4XRaZ-A2INUOIiEFTcKFPr5TKm9UOw_7062yGROBC59wGqcsMp_27JqXUPQ/exec';
+    const STOCK_API_URL = 'https://script.google.com/macros/s/AKfycbzfqxtZSrodhCzhQoucXCTe-yZ-IU3zlaya8imN_Mne3-JlcfOPECLUalhBaddHNyJo/exec';  // ← replace this
 
     // ========== LOGIN ==========
     async function handleLogin(e) {
@@ -387,35 +320,21 @@
       btn.textContent = 'Logging in...';
 
       try {
-        if (!LOGIN_API_URL) {
-          // fallback: try to read from input
-          LOGIN_API_URL = document.getElementById('loginApiUrl')?.value?.trim() || '';
-          if (!LOGIN_API_URL) throw new Error('Please set Login API URL first (in the config after login, or hardcode it)');
-        }
-
         const res = await fetch(LOGIN_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'login',
-            username,
-            password,
-            secret: AUTH_SECRET || undefined
-          })
+          body: JSON.stringify({ action: 'login', username, password })
         });
-
         const data = await res.json();
 
-        if (!data.success) {
-          throw new Error(data.error || 'Login failed');
-        }
+        if (!data.success) throw new Error(data.error || 'Login failed');
 
-        // Save session
         sessionStorage.setItem('stock_logged_in', 'true');
         sessionStorage.setItem('stock_username', data.user.username);
         sessionStorage.setItem('stock_role', data.user.role || 'user');
 
         showApp(data.user.username, data.user.role);
+        loadProducts();
       } catch (err) {
         errEl.textContent = err.message;
         errEl.classList.add('show');
@@ -441,29 +360,28 @@
       document.getElementById('currentRole').textContent = role || 'user';
     }
 
-    // Auto-check session
+    // Auto login check
     (function () {
       if (sessionStorage.getItem('stock_logged_in') === 'true') {
         showApp(
           sessionStorage.getItem('stock_username') || 'User',
           sessionStorage.getItem('stock_role') || 'user'
         );
+        loadProducts();
       }
     })();
 
     // ========== STOCK API ==========
     async function apiCall(method = 'GET', body = null, extraParams = {}) {
-      if (!API_URL || !API_TOKEN) {
-        showStatus('Please set Stock API URL and Token', 'error');
-        throw new Error('Missing stock API config');
-      }
-
-      const params = new URLSearchParams({ token: API_TOKEN, ...extraParams });
+      const params = new URLSearchParams(extraParams);
       if (method !== 'GET' && method !== 'POST') {
         params.set('method', method);
       }
 
-      const url = `${API_URL}?${params.toString()}`;
+      const url = params.toString()
+        ? `${STOCK_API_URL}?${params.toString()}`
+        : STOCK_API_URL;
+
       const options = {
         method: method === 'GET' ? 'GET' : 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -560,10 +478,10 @@
         if (id) {
           payload.id = Number(id);
           await apiCall('PUT', payload);
-          showStatus('Product updated (PUT)', 'success');
+          showStatus('Product updated', 'success');
         } else {
           await apiCall('POST', payload);
-          showStatus('Product created (POST)', 'success');
+          showStatus('Product created', 'success');
         }
         closeModal();
         loadProducts();
@@ -577,7 +495,7 @@
       if (newStock === null) return;
       try {
         await apiCall('PATCH', { id: Number(id), stock: Number(newStock) });
-        showStatus('Stock updated (PATCH)', 'success');
+        showStatus('Stock updated', 'success');
         loadProducts();
       } catch (err) {
         showStatus(err.message, 'error');
@@ -588,7 +506,7 @@
       const el = document.getElementById('status');
       el.textContent = msg;
       el.className = `status show ${type}`;
-      setTimeout(() => el.classList.remove('show'), 4000);
+      setTimeout(() => el.classList.remove('show'), 3500);
     }
   </script>
 </body>
