@@ -372,7 +372,7 @@
 
           // ===== Filtering rules =====
           if (!name) return;
-          if (active !== "yes") return;
+          if (active !== "TRUE") return;
           if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
           const price = Number(priceRaw);
           if (isNaN(price) || price < 0) return;

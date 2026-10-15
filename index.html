@@ -53,7 +53,7 @@
     /* Fixed Order Now button */
     .fixed-order-btn {
       position: fixed;
-      top: 70px;               /* below the top banner + header */
+      bottom: 70px;
       right: 20px;
       z-index: 1000;
       background: #ffb703;
@@ -269,7 +269,7 @@
 
           // ===== Filtering rules =====
           if (!name) return;
-          if (active !== "yes") return;
+          if (active !== "TRUE") return;
           if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
           const price = Number(priceRaw);
           if (isNaN(price) || price < 0) return;
