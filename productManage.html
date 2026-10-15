@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stock Admin</title>
@@ -8,7 +9,6 @@
     :root {
       --primary: #2563eb;
       --success: #16a34a;
-      --danger: #dc2626;
       --gray: #64748b;
       --bg: #f1f5f9;
     }
@@ -77,7 +77,7 @@
     }
     .login-error.show { display: block; }
 
-    /* MAIN APP */
+    /* APP */
     #app { display: none; }
     .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
     .header {
@@ -301,14 +301,8 @@
   </div>
 
   <script>
-    // =============================================
-    //  HARDCODED API URLS  (replace Stock URL)
-    // =============================================
-    const LOGIN_API_URL = 'https://script.google.com/macros/s/AKfycbyxYblOYDZ4XRaZ-A2INUOIiEFTcKFPr5TKm9UOw_7062yGROBC59wGqcsMp_27JqXUPQ/exec';
-    const STOCK_API_URL = 'https://script.google.com/macros/s/AKfycbzfqxtZSrodhCzhQoucXCTe-yZ-IU3zlaya8imN_Mne3-JlcfOPECLUalhBaddHNyJo/exec';  // ← replace this
-
     // ========== LOGIN ==========
-    async function handleLogin(e) {
+    function handleLogin(e) {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
@@ -319,29 +313,28 @@
       btn.disabled = true;
       btn.textContent = 'Logging in...';
 
-      try {
-        const res = await fetch(LOGIN_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'login', username, password })
-        });
-        const data = await res.json();
-
-        if (!data.success) throw new Error(data.error || 'Login failed');
-
-        sessionStorage.setItem('stock_logged_in', 'true');
-        sessionStorage.setItem('stock_username', data.user.username);
-        sessionStorage.setItem('stock_role', data.user.role || 'user');
-
-        showApp(data.user.username, data.user.role);
-        loadProducts();
-      } catch (err) {
-        errEl.textContent = err.message;
-        errEl.classList.add('show');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Login';
-      }
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false;
+          btn.textContent = 'Login';
+          if (res.success) {
+            sessionStorage.setItem('stock_logged_in', 'true');
+            sessionStorage.setItem('stock_username', res.user.username);
+            sessionStorage.setItem('stock_role', res.user.role || 'user');
+            showApp(res.user.username, res.user.role);
+            loadProducts();
+          } else {
+            errEl.textContent = res.error || 'Login failed';
+            errEl.classList.add('show');
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.textContent = 'Login';
+          errEl.textContent = err.message || 'Network error';
+          errEl.classList.add('show');
+        })
+        .login(username, password);
     }
 
     function logout() {
@@ -360,8 +353,8 @@
       document.getElementById('currentRole').textContent = role || 'user';
     }
 
-    // Auto login check
-    (function () {
+    // Auto-login check
+    (function() {
       if (sessionStorage.getItem('stock_logged_in') === 'true') {
         showApp(
           sessionStorage.getItem('stock_username') || 'User',
@@ -371,73 +364,53 @@
       }
     })();
 
-    // ========== STOCK API ==========
-    async function apiCall(method = 'GET', body = null, extraParams = {}) {
-      const params = new URLSearchParams(extraParams);
-      if (method !== 'GET' && method !== 'POST') {
-        params.set('method', method);
-      }
+    // ========== STOCK FUNCTIONS ==========
+    function loadProducts() {
+      showStatus('Loading...', 'success');
+      const filter = document.getElementById('filterActive').value;
 
-      const url = params.toString()
-        ? `${STOCK_API_URL}?${params.toString()}`
-        : STOCK_API_URL;
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res.success) {
+            showStatus(res.error, 'error');
+            return;
+          }
 
-      const options = {
-        method: method === 'GET' ? 'GET' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      };
-      if (body && method !== 'GET') options.body = JSON.stringify(body);
+          const tbody = document.getElementById('productTable');
+          if (!res.data || res.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="empty">No products found</td></tr>`;
+            showStatus('Loaded 0 products', 'success');
+            return;
+          }
 
-      const res = await fetch(url, options);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Unknown error');
-      return data;
-    }
+          tbody.innerHTML = res.data.map(p => {
+            const id = p.ID || p.id;
+            const price = p['price (HKD)'] ?? p.price ?? 0;
+            return `
+              <tr>
+                <td>${id}</td>
+                <td>${p.photo_url ? `<img src="${p.photo_url}" class="photo" onerror="this.style.display='none'">` : '—'}</td>
+                <td><strong>${p.product_name}</strong></td>
+                <td>$${Number(price).toFixed(2)}</td>
+                <td>${p.stock}</td>
+                <td>
+                  <span class="badge ${p.active ? 'badge-active' : 'badge-inactive'}">
+                    ${p.active ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(p)})'>Edit</button>
+                  <button class="btn-sm" style="background:#f59e0b;color:white;border:none"
+                          onclick="quickStock(${id}, ${p.stock})">Stock</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
 
-    async function loadProducts() {
-      try {
-        showStatus('Loading...', 'success');
-        const filter = document.getElementById('filterActive').value;
-        const params = filter ? { active: filter } : {};
-        const result = await apiCall('GET', null, params);
-
-        const tbody = document.getElementById('productTable');
-        if (!result.data || result.data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="empty">No products found</td></tr>`;
-          showStatus('Loaded 0 products', 'success');
-          return;
-        }
-
-        tbody.innerHTML = result.data.map(p => {
-          const id = p.ID || p.id;
-          const price = p['price (HKD)'] ?? p.price ?? 0;
-          return `
-            <tr>
-              <td>${id}</td>
-              <td>${p.photo_url ? `<img src="${p.photo_url}" class="photo" onerror="this.style.display='none'">` : '—'}</td>
-              <td><strong>${p.product_name}</strong></td>
-              <td>$${Number(price).toFixed(2)}</td>
-              <td>${p.stock}</td>
-              <td>
-                <span class="badge ${p.active ? 'badge-active' : 'badge-inactive'}">
-                  ${p.active ? 'Active' : 'Inactive'}
-                </span>
-              </td>
-              <td>
-                <button class="btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(p)})'>Edit</button>
-                <button class="btn-sm" style="background:#f59e0b;color:white;border:none"
-                        onclick="quickStock(${id}, ${p.stock})">Stock</button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-
-        showStatus(`Loaded ${result.count} products`, 'success');
-      } catch (err) {
-        showStatus(err.message, 'error');
-        document.getElementById('productTable').innerHTML =
-          `<tr><td colspan="7" class="empty">Error: ${err.message}</td></tr>`;
-      }
+          showStatus(`Loaded ${res.count} products`, 'success');
+        })
+        .withFailureHandler(err => showStatus(err.message, 'error'))
+        .getProducts(filter);
     }
 
     function openAddModal() {
@@ -463,7 +436,7 @@
       document.getElementById('modal').classList.remove('show');
     }
 
-    async function saveProduct(e) {
+    function saveProduct(e) {
       e.preventDefault();
       const id = document.getElementById('editId').value;
       const payload = {
@@ -474,32 +447,51 @@
         active: document.getElementById('active').value === 'true'
       };
 
-      try {
-        if (id) {
-          payload.id = Number(id);
-          await apiCall('PUT', payload);
-          showStatus('Product updated', 'success');
-        } else {
-          await apiCall('POST', payload);
-          showStatus('Product created', 'success');
-        }
-        closeModal();
-        loadProducts();
-      } catch (err) {
-        showStatus(err.message, 'error');
+      if (id) {
+        payload.id = Number(id);
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res.success) {
+              showStatus('Product updated', 'success');
+              closeModal();
+              loadProducts();
+            } else {
+              showStatus(res.error, 'error');
+            }
+          })
+          .withFailureHandler(err => showStatus(err.message, 'error'))
+          .updateProduct(payload);
+      } else {
+        google.script.run
+          .withSuccessHandler(res => {
+            if (res.success) {
+              showStatus('Product created', 'success');
+              closeModal();
+              loadProducts();
+            } else {
+              showStatus(res.error, 'error');
+            }
+          })
+          .withFailureHandler(err => showStatus(err.message, 'error'))
+          .createProduct(payload);
       }
     }
 
-    async function quickStock(id, currentStock) {
+    function quickStock(id, currentStock) {
       const newStock = prompt(`Update stock for ID ${id}\nCurrent: ${currentStock}`, currentStock);
       if (newStock === null) return;
-      try {
-        await apiCall('PATCH', { id: Number(id), stock: Number(newStock) });
-        showStatus('Stock updated', 'success');
-        loadProducts();
-      } catch (err) {
-        showStatus(err.message, 'error');
-      }
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.success) {
+            showStatus('Stock updated', 'success');
+            loadProducts();
+          } else {
+            showStatus(res.error, 'error');
+          }
+        })
+        .withFailureHandler(err => showStatus(err.message, 'error'))
+        .patchProduct({ id: Number(id), stock: Number(newStock) });
     }
 
     function showStatus(msg, type) {
