@@ -3,34 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Management</title>
+  <title>Stock Admin - Login Required</title>
   <style>
     :root {
       --primary: #2563eb;
       --success: #16a34a;
       --danger: #dc2626;
       --gray: #64748b;
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: #1e293b;
-      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ========== LOGIN SCREEN ========== */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 20px;
     }
-    .container { max-width: 1100px; margin: 0 auto; }
-    h1 { margin-bottom: 8px; font-size: 1.8rem; }
-    .subtitle { color: var(--gray); margin-bottom: 24px; }
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .login-card h1 {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .login-card .subtitle {
+      text-align: center;
+      color: var(--gray);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-login:hover { background: #1d4ed8; }
+    .login-error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .login-error.show { display: block; }
+
+    /* ========== MAIN APP ========== */
+    #app { display: none; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header h1 { font-size: 1.7rem; }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+    .user-info span { color: var(--gray); }
+    .btn-logout {
+      background: #e2e8f0;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-logout:hover { background: #cbd5e1; }
 
     /* Config bar */
     .config {
       background: white;
       border-radius: 12px;
       padding: 16px 20px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
@@ -42,7 +138,7 @@
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       width: 100%;
-      min-width: 260px;
+      min-width: 240px;
     }
     .config button {
       background: var(--primary);
@@ -53,7 +149,6 @@
       cursor: pointer;
       font-weight: 500;
     }
-    .config button:hover { background: #1d4ed8; }
 
     /* Toolbar */
     .toolbar {
@@ -72,21 +167,20 @@
     }
     .btn-primary { background: var(--primary); color: white; border: none; }
     .btn-success { background: var(--success); color: white; border: none; }
-    .btn-danger  { background: var(--danger);  color: white; border: none; }
     .btn-sm { padding: 5px 10px; font-size: 0.85rem; }
 
     /* Table */
     .card {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       overflow: hidden;
     }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-    th { background: #f1f5f9; font-weight: 600; font-size: 0.85rem; color: var(--gray); }
+    th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; color: var(--gray); }
     tr:hover { background: #f8fafc; }
-    .photo { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; }
+    .photo { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; }
     .badge {
       display: inline-block;
       padding: 2px 10px;
@@ -100,7 +194,7 @@
     /* Modal */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.45);
       display: none;
       align-items: center;
       justify-content: center;
@@ -111,26 +205,36 @@
       background: white;
       border-radius: 16px;
       width: 95%;
-      max-width: 480px;
+      max-width: 460px;
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
-    .modal h2 { margin-bottom: 20px; font-size: 1.3rem; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.85rem; color: var(--gray); margin-bottom: 4px; }
-    .form-group input, .form-group select {
+    .modal h2 { margin-bottom: 18px; font-size: 1.25rem; }
+    .modal .form-group { margin-bottom: 14px; }
+    .modal input, .modal select {
       width: 100%;
       padding: 9px 12px;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
     }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-    .modal-actions button { padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .modal-actions button {
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
     .btn-cancel { background: #e2e8f0; color: #334155; }
 
     /* Status */
     .status {
-      margin-top: 12px;
+      margin-bottom: 14px;
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 0.9rem;
@@ -143,60 +247,92 @@
     .empty { text-align: center; padding: 40px; color: var(--gray); }
 
     @media (max-width: 640px) {
-      th:nth-child(5), td:nth-child(5) { display: none; } /* hide photo url on mobile */
+      th:nth-child(5), td:nth-child(5) { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>📦 Stock Management</h1>
-    <p class="subtitle">Google Sheets Backend via Apps Script</p>
 
-    <!-- Config -->
-    <div class="config">
-      <div style="flex:1">
-        <label>API URL</label>
-        <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/XXXX/exec">
-      </div>
-      <div style="flex:1">
-        <label>Token</label>
-        <input type="password" id="apiToken" placeholder="Your secret token">
-      </div>
-      <button onclick="saveConfig()">Save & Load</button>
+  <!-- ========== LOGIN SCREEN ========== -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <h1>🔐 Stock Admin</h1>
+      <p class="subtitle">Please login to continue</p>
+
+      <div id="loginError" class="login-error"></div>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="username" required placeholder="Enter username" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" required placeholder="Enter password" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login">Login</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <select id="filterActive" onchange="loadProducts()">
-        <option value="">All products</option>
-        <option value="true" selected>Active only</option>
-        <option value="false">Inactive only</option>
-      </select>
-      <button class="btn-primary" onclick="loadProducts()">🔄 Refresh</button>
-      <button class="btn-success" onclick="openAddModal()">+ Add Product</button>
-    </div>
+  <!-- ========== MAIN APP (hidden until login) ========== -->
+  <div id="app">
+    <div class="container">
+      <div class="header">
+        <div>
+          <h1>📦 Stock Management</h1>
+        </div>
+        <div class="user-info">
+          <span>Logged in as <strong id="currentUser"></strong></span>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
 
-    <!-- Status message -->
-    <div id="status" class="status"></div>
+      <!-- API Config -->
+      <div class="config">
+        <div style="flex:1">
+          <label>API URL</label>
+          <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/XXXX/exec">
+        </div>
+        <div style="flex:1">
+          <label>API Token</label>
+          <input type="password" id="apiToken" placeholder="Your secret token">
+        </div>
+        <button onclick="saveConfig()">Save & Load</button>
+      </div>
 
-    <!-- Table -->
-    <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Photo</th>
-            <th>Product</th>
-            <th>Price (HKD)</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="productTable">
-          <tr><td colspan="7" class="empty">Enter API URL + Token and click Save & Load</td></tr>
-        </tbody>
-      </table>
+      <div id="status" class="status"></div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <select id="filterActive" onchange="loadProducts()">
+          <option value="">All products</option>
+          <option value="true" selected>Active only</option>
+          <option value="false">Inactive only</option>
+        </select>
+        <button class="btn-primary" onclick="loadProducts()">🔄 Refresh</button>
+        <button class="btn-success" onclick="openAddModal()">+ Add Product</button>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Photo</th>
+              <th>Product</th>
+              <th>Price (HKD)</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productTable">
+            <tr><td colspan="7" class="empty">Enter API URL + Token and click Save & Load</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -233,14 +369,69 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn-primary" id="saveBtn">Save</button>
+          <button type="submit" class="btn-primary">Save</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // ========== CONFIG ==========
+    // ============================================
+    // 1. LOGIN ACCOUNTS (change these as needed)
+    // ============================================
+    const USERS = [
+      { username: "admin",  password: "admin123" },
+      { username: "ben",    password: "ben888" },
+      { username: "staff",  password: "staff123" }
+    ];
+
+    // ============================================
+    // 2. LOGIN / LOGOUT
+    // ============================================
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      const user = USERS.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        sessionStorage.setItem('stock_logged_in', 'true');
+        sessionStorage.setItem('stock_username', username);
+        showApp(username);
+      } else {
+        const err = document.getElementById('loginError');
+        err.textContent = 'Invalid username or password';
+        err.classList.add('show');
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem('stock_logged_in');
+      sessionStorage.removeItem('stock_username');
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('loginError').classList.remove('show');
+    }
+
+    function showApp(username) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('currentUser').textContent = username;
+    }
+
+    // Check session on page load
+    (function checkSession() {
+      if (sessionStorage.getItem('stock_logged_in') === 'true') {
+        showApp(sessionStorage.getItem('stock_username') || 'User');
+      }
+    })();
+
+    // ============================================
+    // 3. API CONFIG
+    // ============================================
     let API_URL = localStorage.getItem('stock_api_url') || '';
     let API_TOKEN = localStorage.getItem('stock_api_token') || '';
 
@@ -255,7 +446,9 @@
       loadProducts();
     }
 
-    // ========== API HELPER ==========
+    // ============================================
+    // 4. API CALL (GET / POST / PUT / PATCH)
+    // ============================================
     async function apiCall(method = 'GET', body = null, extraParams = {}) {
       if (!API_URL || !API_TOKEN) {
         showStatus('Please set API URL and Token first', 'error');
@@ -264,7 +457,7 @@
 
       const params = new URLSearchParams({ token: API_TOKEN, ...extraParams });
       if (method !== 'GET' && method !== 'POST') {
-        params.set('method', method); // PUT / PATCH
+        params.set('method', method); // for PUT / PATCH
       }
 
       const url = `${API_URL}?${params.toString()}`;
@@ -286,7 +479,9 @@
       return data;
     }
 
-    // ========== LOAD PRODUCTS ==========
+    // ============================================
+    // 5. LOAD PRODUCTS (GET)
+    // ============================================
     async function loadProducts() {
       try {
         showStatus('Loading...', 'success');
@@ -297,29 +492,33 @@
         const tbody = document.getElementById('productTable');
         if (!result.data || result.data.length === 0) {
           tbody.innerHTML = `<tr><td colspan="7" class="empty">No products found</td></tr>`;
-          showStatus(`Loaded 0 products`, 'success');
+          showStatus('Loaded 0 products', 'success');
           return;
         }
 
-        tbody.innerHTML = result.data.map(p => `
-          <tr>
-            <td>${p.ID || p.id}</td>
-            <td>${p.photo_url ? `<img src="${p.photo_url}" class="photo" onerror="this.style.display='none'">` : '—'}</td>
-            <td><strong>${p.product_name}</strong></td>
-            <td>$${Number(p['price (HKD)'] || p.price || 0).toFixed(2)}</td>
-            <td>${p.stock}</td>
-            <td>
-              <span class="badge ${p.active ? 'badge-active' : 'badge-inactive'}">
-                ${p.active ? 'Active' : 'Inactive'}
-              </span>
-            </td>
-            <td>
-              <button class="btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(p)})'>Edit</button>
-              <button class="btn-sm" style="background:#f59e0b;color:white;border:none"
-                      onclick="quickStock(${p.ID || p.id}, ${p.stock})">Stock</button>
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = result.data.map(p => {
+          const id = p.ID || p.id;
+          const price = p['price (HKD)'] ?? p.price ?? 0;
+          return `
+            <tr>
+              <td>${id}</td>
+              <td>${p.photo_url ? `<img src="${p.photo_url}" class="photo" onerror="this.style.display='none'">` : '—'}</td>
+              <td><strong>${p.product_name}</strong></td>
+              <td>$${Number(price).toFixed(2)}</td>
+              <td>${p.stock}</td>
+              <td>
+                <span class="badge ${p.active ? 'badge-active' : 'badge-inactive'}">
+                  ${p.active ? 'Active' : 'Inactive'}
+                </span>
+              </td>
+              <td>
+                <button class="btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(p)})'>Edit</button>
+                <button class="btn-sm" style="background:#f59e0b;color:white;border:none"
+                        onclick="quickStock(${id}, ${p.stock})">Stock</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
 
         showStatus(`Loaded ${result.count} products`, 'success');
       } catch (err) {
@@ -329,7 +528,9 @@
       }
     }
 
-    // ========== ADD / EDIT ==========
+    // ============================================
+    // 6. ADD / EDIT (POST / PUT)
+    // ============================================
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Add Product';
       document.getElementById('editId').value = '';
@@ -342,7 +543,7 @@
       document.getElementById('modalTitle').textContent = 'Edit Product';
       document.getElementById('editId').value = p.ID || p.id;
       document.getElementById('product_name').value = p.product_name || '';
-      document.getElementById('price').value = p['price (HKD)'] || p.price || 0;
+      document.getElementById('price').value = p['price (HKD)'] ?? p.price ?? 0;
       document.getElementById('stock').value = p.stock || 0;
       document.getElementById('photo_url').value = p.photo_url || '';
       document.getElementById('active').value = p.active ? 'true' : 'false';
@@ -367,11 +568,11 @@
       try {
         if (id) {
           payload.id = Number(id);
-          await apiCall('PUT', payload);
-          showStatus('Product updated', 'success');
+          await apiCall('PUT', payload);          // Full update
+          showStatus('Product updated (PUT)', 'success');
         } else {
-          await apiCall('POST', payload);
-          showStatus('Product created', 'success');
+          await apiCall('POST', payload);         // Create
+          showStatus('Product created (POST)', 'success');
         }
         closeModal();
         loadProducts();
@@ -380,31 +581,30 @@
       }
     }
 
-    // ========== QUICK STOCK UPDATE (PATCH) ==========
+    // ============================================
+    // 7. QUICK STOCK UPDATE (PATCH)
+    // ============================================
     async function quickStock(id, currentStock) {
       const newStock = prompt(`Update stock for ID ${id}\nCurrent: ${currentStock}`, currentStock);
       if (newStock === null) return;
 
       try {
         await apiCall('PATCH', { id: Number(id), stock: Number(newStock) });
-        showStatus('Stock updated', 'success');
+        showStatus('Stock updated (PATCH)', 'success');
         loadProducts();
       } catch (err) {
         showStatus(err.message, 'error');
       }
     }
 
-    // ========== UI HELPERS ==========
+    // ============================================
+    // 8. UI HELPERS
+    // ============================================
     function showStatus(msg, type) {
       const el = document.getElementById('status');
       el.textContent = msg;
       el.className = `status show ${type}`;
       setTimeout(() => el.classList.remove('show'), 4000);
-    }
-
-    // Auto-load if config exists
-    if (API_URL && API_TOKEN) {
-      loadProducts();
     }
   </script>
 </body>
