@@ -141,7 +141,21 @@
     }
     .product-info { flex: 1; min-width: 0; }
     .product-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
-    .product-price { color: #e63946; font-weight: 600; font-size: 15px; }
+
+    .price-block {
+      margin-bottom: 2px;
+    }
+    .original-price {
+      font-size: 13px;
+      color: #999;
+      text-decoration: line-through;
+    }
+    .selling-price {
+      color: #e63946;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
     .product-stock { font-size: 13px; color: #555; margin-top: 2px; }
     .product-stock.out { color: #e63946; font-weight: 500; }
     .qty-wrapper { width: 100px; flex-shrink: 0; }
@@ -164,7 +178,6 @@
     }
     .total-price { color: #e63946; font-size: 22px; }
 
-    /* Buttons */
     .btn-group {
       display: flex;
       flex-direction: column;
@@ -203,7 +216,6 @@
       background: #eff6ff;
     }
 
-    /* Success page */
     .success-page {
       display: none;
       text-align: center;
@@ -262,7 +274,6 @@
 
   <div class="top-banner">限時優惠，所有產品10折！</div>
 
-  <!-- Header -->
   <div class="header">
     <div class="header-left">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
@@ -273,7 +284,6 @@
 
   <div class="container">
 
-    <!-- ========== ORDER FORM ========== -->
     <div id="orderSection">
       <h1>下單表格</h1>
       <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
@@ -283,7 +293,6 @@
             method="POST"
             target="hidden_iframe">
 
-        <!-- Hidden fields for Google Sheet -->
         <input type="hidden" name="priceTotal" id="totalHidden" value="0">
         <input type="hidden" name="orderItems" id="orderContentHidden" value="">
 
@@ -316,7 +325,6 @@
       </form>
     </div>
 
-    <!-- ========== SUCCESS PAGE ========== -->
     <div id="successPage" class="success-page">
       <div class="success-icon">✅</div>
       <h2>訂單已成功提交！</h2>
@@ -364,19 +372,39 @@
         rows.forEach(row => {
           const cells = row.c;
 
-          const name     = cells[1] ? (cells[1].v || "") : "";
-          const priceRaw = cells[2] ? cells[2].v : null;
-          const stock    = cells[3] ? Number(cells[3].v || 0) : 0;
-          const photo    = cells[4] ? (cells[4].v || "") : "";
-          const active   = cells[5] ? (cells[5].v || "").toString().toLowerCase().trim() : "";
+          // 0:ID | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
+          const name          = cells[1] ? (cells[1].v || "") : "";
+          const originalRaw   = cells[2] ? cells[2].v : null;
+          const sellingRaw    = cells[3] ? cells[3].v : null;
+          const stock         = cells[4] ? Number(cells[4].v || 0) : 0;
+          const photo         = cells[5] ? (cells[5].v || "") : "";
 
-          // ===== Filtering rules =====
           if (!name) return;
-          if (priceRaw === null || priceRaw === "" || priceRaw === undefined) return;
-          const price = Number(priceRaw);
-          if (isNaN(price) || price < 0) return;
+          if (sellingRaw === null || sellingRaw === "" || sellingRaw === undefined) return;
 
+          const sellingPrice  = Number(sellingRaw);
+          const originalPrice = originalRaw !== null && originalRaw !== "" ? Number(originalRaw) : null;
+
+          if (isNaN(sellingPrice) || sellingPrice < 0) return;
+
+          const hasDiscount = originalPrice !== null && !isNaN(originalPrice) && sellingPrice < originalPrice;
           const isOut = stock <= 0;
+
+          let priceHtml = "";
+          if (hasDiscount) {
+            priceHtml = `
+              <div class="price-block">
+                <div class="original-price">$${originalPrice.toFixed(2)}</div>
+                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
+              </div>
+            `;
+          } else {
+            priceHtml = `
+              <div class="price-block">
+                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
+              </div>
+            `;
+          }
 
           html += `
             <div class="product-item">
@@ -387,7 +415,7 @@
                 : `<div class="no-photo">No Photo</div>`}
               <div class="product-info">
                 <div class="product-name">${escapeHtml(name)}</div>
-                <div class="product-price">$${price.toFixed(2)}</div>
+                ${priceHtml}
                 <div class="product-stock ${isOut ? 'out' : ''}">
                   ${isOut ? '暫時缺貨' : '存貨：' + stock}
                 </div>
@@ -398,7 +426,7 @@
                        min="0"
                        ${isOut ? 'disabled' : `max="${stock}"`}
                        value="0"
-                       data-price="${price}"
+                       data-price="${sellingPrice}"
                        data-name="${name}">
               </div>
             </div>`;
@@ -437,16 +465,13 @@
       document.getElementById("orderContentHidden").value = items.join("\n");
     }
 
-    // Handle form submission
     document.getElementById("orderForm").addEventListener("submit", function() {
       updateTotalAndContent();
 
-      // Hide the form and show success page after a short delay
       setTimeout(function() {
         document.getElementById("orderSection").style.display = "none";
         document.getElementById("successPage").classList.add("show");
 
-        // Countdown + redirect
         let seconds = 5;
         const countdownEl = document.getElementById("countdownText");
 
