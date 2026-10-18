@@ -11,6 +11,7 @@
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
+      padding-bottom: 80px; /* space for fixed total bar */
     }
     .top-banner {
       background-color: rgb(11, 83, 148);
@@ -61,7 +62,7 @@
     .container {
       max-width: 720px;
       margin: 0 auto;
-      padding: 32px 20px 60px;
+      padding: 32px 20px 40px;
     }
     h1 {
       text-align: center;
@@ -141,7 +142,6 @@
     }
     .product-info { flex: 1; min-width: 0; }
     .product-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
-
     .price-block {
       margin-bottom: 2px;
     }
@@ -155,7 +155,6 @@
       font-weight: 600;
       font-size: 15px;
     }
-
     .product-stock { font-size: 13px; color: #555; margin-top: 2px; }
     .product-stock.out { color: #e63946; font-weight: 500; }
     .qty-wrapper { width: 100px; flex-shrink: 0; }
@@ -165,24 +164,35 @@
       color: #999;
       cursor: not-allowed;
     }
+
+    /* ===== Fixed Total Bar ===== */
     .total-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f8fafc;
-      padding: 16px 20px;
-      border-radius: 10px;
-      margin: 20px 0;
+      background: #1e293b;
+      color: white;
+      padding: 14px 20px;
       font-size: 18px;
       font-weight: 600;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
     }
-    .total-price { color: #e63946; font-size: 22px; }
+    .total-price {
+      color: #fbbf24;
+      font-size: 22px;
+    }
 
     .btn-group {
       display: flex;
       flex-direction: column;
       gap: 12px;
       margin-top: 8px;
+      margin-bottom: 16px;
     }
     button[type="submit"] {
       width: 100%;
@@ -196,7 +206,6 @@
       cursor: pointer;
     }
     button[type="submit"]:hover { background: #1d4ed8; }
-
     .btn-home {
       display: block;
       width: 100%;
@@ -215,7 +224,6 @@
     .btn-home:hover {
       background: #eff6ff;
     }
-
     .success-page {
       display: none;
       text-align: center;
@@ -247,7 +255,6 @@
       font-size: 15px;
       color: #666;
     }
-
     .loading, .error-load {
       text-align: center;
       padding: 40px 20px;
@@ -283,7 +290,6 @@
   </div>
 
   <div class="container">
-
     <div id="orderSection">
       <h1>下單表格</h1>
       <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
@@ -300,10 +306,8 @@
           <h2>聯絡資料</h2>
           <label>稱呼 *</label>
           <input type="text" name="name" required placeholder="例如：Ben">
-
           <label>Email *</label>
           <input type="email" name="email" required placeholder="example@gmail.com">
-
           <label>電話號碼</label>
           <input type="tel" name="phoneNo" placeholder="例如：91234567">
         </div>
@@ -311,11 +315,6 @@
         <div class="card">
           <h2>選擇產品</h2>
           <div id="productList" class="loading">正在載入產品資料...</div>
-        </div>
-
-        <div class="total-bar">
-          <span>合計</span>
-          <span class="total-price" id="totalPrice">$0.00</span>
         </div>
 
         <div class="btn-group">
@@ -338,7 +337,12 @@
         立即返回主頁
       </a>
     </div>
+  </div>
 
+  <!-- Fixed Total Bar -->
+  <div class="total-bar" id="fixedTotalBar">
+    <span>合計</span>
+    <span class="total-price" id="totalPrice">$0.00</span>
   </div>
 
   <footer>
@@ -470,6 +474,7 @@
 
       setTimeout(function() {
         document.getElementById("orderSection").style.display = "none";
+        document.getElementById("fixedTotalBar").style.display = "none"; // hide total bar on success
         document.getElementById("successPage").classList.add("show");
 
         let seconds = 5;
@@ -484,7 +489,6 @@
             window.location.href = HOME_URL;
           }
         }, 1000);
-
       }, 800);
     });
 
