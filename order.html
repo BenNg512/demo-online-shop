@@ -313,8 +313,10 @@
             target="hidden_iframe"
             novalidate>
 
+        <!-- Hidden fields -->
         <input type="hidden" name="priceTotal" id="totalHidden" value="0">
         <input type="hidden" name="orderItems" id="orderContentHidden" value="">
+        <input type="hidden" name="orderItemsWithId" id="orderItemsWithIdHidden" value="">
 
         <div class="card">
           <h2>聯絡資料</h2>
@@ -396,6 +398,8 @@
         rows.forEach(row => {
           const cells = row.c;
 
+          // 0:ID | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
+          const id            = cells[0] ? (cells[0].v || "") : "";
           const name          = cells[1] ? (cells[1].v || "") : "";
           const originalRaw   = cells[2] ? cells[2].v : null;
           const sellingRaw    = cells[3] ? cells[3].v : null;
@@ -450,7 +454,8 @@
                        ${isOut ? 'disabled' : `max="${stock}"`}
                        value="0"
                        data-price="${sellingPrice}"
-                       data-name="${name}">
+                       data-name="${name}"
+                       data-id="${id}">
               </div>
             </div>`;
         });
@@ -471,21 +476,25 @@
     function updateTotalAndContent() {
       let total = 0;
       const items = [];
+      const itemsWithId = [];
 
       document.querySelectorAll(".qty-wrapper input").forEach(input => {
         const qty = parseInt(input.value) || 0;
         if (qty <= 0) return;
 
         const price = parseFloat(input.dataset.price) || 0;
-        const name = input.dataset.name || input.name;
+        const name  = input.dataset.name || input.name;
+        const id    = input.dataset.id || "";
 
         total += qty * price;
         items.push(`${name} ： $${price.toFixed(2)} x ${qty}`);
+        itemsWithId.push(`${id} & ${name} ： $${price.toFixed(2)} x ${qty}`);
       });
 
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
       document.getElementById("totalHidden").value = total.toFixed(2);
       document.getElementById("orderContentHidden").value = items.join("\n");
+      document.getElementById("orderItemsWithIdHidden").value = itemsWithId.join("\n");
     }
 
     // ===== Validation =====
@@ -537,10 +546,8 @@
     });
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
-      // Validate first
       if (!validateForm()) {
-        e.preventDefault(); // stop submission
-        // Scroll to the first error
+        e.preventDefault();
         const firstError = document.querySelector("input.error");
         if (firstError) firstError.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
