@@ -11,7 +11,7 @@
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
-      padding-bottom: 80px; /* space for fixed total bar */
+      padding-bottom: 80px;
     }
     .top-banner {
       background-color: rgb(11, 83, 148);
@@ -102,7 +102,7 @@
     input[type="number"] {
       width: 100%;
       padding: 12px 14px;
-      margin-bottom: 16px;
+      margin-bottom: 4px;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
@@ -111,6 +111,19 @@
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    input.error {
+      border-color: #e63946;
+      background: #fff5f5;
+    }
+    .field-error {
+      color: #e63946;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .field-error.show {
+      display: block;
     }
     .product-item {
       display: flex;
@@ -165,7 +178,7 @@
       cursor: not-allowed;
     }
 
-    /* ===== Fixed Total Bar ===== */
+    /* Fixed Total Bar */
     .total-bar {
       position: fixed;
       bottom: 0;
@@ -297,19 +310,26 @@
       <form id="orderForm"
             action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
             method="POST"
-            target="hidden_iframe">
+            target="hidden_iframe"
+            novalidate>
 
         <input type="hidden" name="priceTotal" id="totalHidden" value="0">
         <input type="hidden" name="orderItems" id="orderContentHidden" value="">
 
         <div class="card">
           <h2>聯絡資料</h2>
+
           <label>稱呼 *</label>
-          <input type="text" name="name" required placeholder="例如：Ben">
+          <input type="text" id="nameInput" name="name" placeholder="例如：Ben">
+          <div class="field-error" id="nameError">請填寫稱呼</div>
+
           <label>Email *</label>
-          <input type="email" name="email" required placeholder="example@gmail.com">
-          <label>電話號碼</label>
-          <input type="tel" name="phoneNo" placeholder="例如：91234567">
+          <input type="email" id="emailInput" name="email" placeholder="example@gmail.com">
+          <div class="field-error" id="emailError">請填寫正確的 Email</div>
+
+          <label>電話號碼 *</label>
+          <input type="tel" id="phoneInput" name="phoneNo" placeholder="例如：91234567">
+          <div class="field-error" id="phoneError">請填寫電話號碼</div>
         </div>
 
         <div class="card">
@@ -376,7 +396,6 @@
         rows.forEach(row => {
           const cells = row.c;
 
-          // 0:ID | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
           const name          = cells[1] ? (cells[1].v || "") : "";
           const originalRaw   = cells[2] ? cells[2].v : null;
           const sellingRaw    = cells[3] ? cells[3].v : null;
@@ -469,12 +488,69 @@
       document.getElementById("orderContentHidden").value = items.join("\n");
     }
 
-    document.getElementById("orderForm").addEventListener("submit", function() {
+    // ===== Validation =====
+    function clearErrors() {
+      ["nameInput", "emailInput", "phoneInput"].forEach(id => {
+        document.getElementById(id).classList.remove("error");
+      });
+      ["nameError", "emailError", "phoneError"].forEach(id => {
+        document.getElementById(id).classList.remove("show");
+      });
+    }
+
+    function validateForm() {
+      clearErrors();
+      let isValid = true;
+
+      const name  = document.getElementById("nameInput").value.trim();
+      const email = document.getElementById("emailInput").value.trim();
+      const phone = document.getElementById("phoneInput").value.trim();
+
+      if (!name) {
+        document.getElementById("nameInput").classList.add("error");
+        document.getElementById("nameError").classList.add("show");
+        isValid = false;
+      }
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById("emailInput").classList.add("error");
+        document.getElementById("emailError").classList.add("show");
+        isValid = false;
+      }
+
+      if (!phone) {
+        document.getElementById("phoneInput").classList.add("error");
+        document.getElementById("phoneError").classList.add("show");
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    // Clear error when user starts typing
+    ["nameInput", "emailInput", "phoneInput"].forEach(id => {
+      document.getElementById(id).addEventListener("input", function() {
+        this.classList.remove("error");
+        const errorId = id.replace("Input", "Error");
+        document.getElementById(errorId).classList.remove("show");
+      });
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      // Validate first
+      if (!validateForm()) {
+        e.preventDefault(); // stop submission
+        // Scroll to the first error
+        const firstError = document.querySelector("input.error");
+        if (firstError) firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
       updateTotalAndContent();
 
       setTimeout(function() {
         document.getElementById("orderSection").style.display = "none";
-        document.getElementById("fixedTotalBar").style.display = "none"; // hide total bar on success
+        document.getElementById("fixedTotalBar").style.display = "none";
         document.getElementById("successPage").classList.add("show");
 
         let seconds = 5;
