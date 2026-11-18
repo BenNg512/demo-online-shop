@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下單表格 - 買咩都唔會出貨</title>
+  <title>結帳 - 買咩都唔會出貨</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -11,7 +11,7 @@
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
-      padding-bottom: 80px;
+      padding-bottom: 90px;
     }
     .top-banner {
       background-color: rgb(11, 83, 148);
@@ -28,6 +28,9 @@
       justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
     .header-left {
       display: flex;
@@ -56,40 +59,126 @@
       font-weight: 600;
       border: 1px solid #dbeafe;
     }
-    .home-button:hover {
-      background: #dbeafe;
-    }
+    .home-button:hover { background: #dbeafe; }
+
     .container {
       max-width: 720px;
       margin: 0 auto;
-      padding: 32px 20px 40px;
+      padding: 28px 20px 40px;
     }
     h1 {
       text-align: center;
-      margin-bottom: 8px;
-      font-size: 28px;
+      margin-bottom: 6px;
+      font-size: 26px;
       color: #1a1a1a;
     }
     .subtitle {
       text-align: center;
       color: #666;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       font-size: 15px;
     }
     .card {
       background: white;
       border-radius: 12px;
-      padding: 24px;
+      padding: 22px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .card h2 {
-      font-size: 18px;
-      margin-bottom: 18px;
+      font-size: 17px;
+      margin-bottom: 16px;
       color: #1a1a1a;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
+
+    .cart-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: flex-start;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #eee;
+      flex-shrink: 0;
+    }
+    .no-photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .cart-info { flex: 1; min-width: 0; }
+    .cart-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+    .cart-price { color: #e63946; font-weight: 600; font-size: 15px; }
+    .cart-subtotal { font-size: 13px; color: #666; margin-top: 2px; }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+      width: fit-content;
+    }
+    .qty-control button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f1f5f9;
+      font-size: 16px;
+      cursor: pointer;
+      color: #333;
+    }
+    .qty-control button:hover { background: #e2e8f0; }
+    .qty-control span {
+      width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 6px;
+      padding: 0;
+    }
+    .btn-remove:hover { color: #e63946; }
+
+    .empty-cart {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+    .empty-cart a {
+      display: inline-block;
+      margin-top: 16px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
     label {
       display: block;
       margin-bottom: 6px;
@@ -98,8 +187,7 @@
     }
     input[type="text"],
     input[type="email"],
-    input[type="tel"],
-    input[type="number"] {
+    input[type="tel"] {
       width: 100%;
       padding: 12px 14px;
       margin-bottom: 4px;
@@ -122,63 +210,8 @@
       margin-bottom: 14px;
       display: none;
     }
-    .field-error.show {
-      display: block;
-    }
-    .product-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .product-item:last-child { border-bottom: none; }
-    .product-photo {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #eee;
-      flex-shrink: 0;
-    }
-    .no-photo {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      background: #e9ecef;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      font-size: 11px;
-      flex-shrink: 0;
-    }
-    .product-info { flex: 1; min-width: 0; }
-    .product-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
-    .price-block {
-      margin-bottom: 2px;
-    }
-    .original-price {
-      font-size: 13px;
-      color: #999;
-      text-decoration: line-through;
-    }
-    .selling-price {
-      color: #e63946;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .product-stock { font-size: 13px; color: #555; margin-top: 2px; }
-    .product-stock.out { color: #e63946; font-weight: 500; }
-    .qty-wrapper { width: 100px; flex-shrink: 0; }
-    .qty-wrapper input { margin-bottom: 0; text-align: center; }
-    .qty-wrapper input:disabled {
-      background: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-    }
+    .field-error.show { display: block; }
 
-    /* Fixed Total Bar */
     .total-bar {
       position: fixed;
       bottom: 0;
@@ -191,7 +224,7 @@
       background: #1e293b;
       color: white;
       padding: 14px 20px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
       box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
     }
@@ -219,6 +252,10 @@
       cursor: pointer;
     }
     button[type="submit"]:hover { background: #1d4ed8; }
+    button[type="submit"]:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
     .btn-home {
       display: block;
       width: 100%;
@@ -232,11 +269,9 @@
       text-align: center;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.2s;
     }
-    .btn-home:hover {
-      background: #eff6ff;
-    }
+    .btn-home:hover { background: #eff6ff; }
+
     .success-page {
       display: none;
       text-align: center;
@@ -246,15 +281,10 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       margin-top: 20px;
     }
-    .success-page.show {
-      display: block;
-    }
-    .success-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
+    .success-page.show { display: block; }
+    .success-icon { font-size: 64px; margin-bottom: 16px; }
     .success-page h2 {
-      font-size: 28px;
+      font-size: 26px;
       color: #166534;
       margin-bottom: 12px;
     }
@@ -268,13 +298,7 @@
       font-size: 15px;
       color: #666;
     }
-    .loading, .error-load {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-      font-size: 16px;
-    }
-    .error-load { color: #e63946; }
+
     footer {
       background: #e0f7fa;
       padding: 24px;
@@ -284,9 +308,9 @@
       margin-top: 40px;
     }
     footer p { margin: 4px 0; }
+
     @media (max-width: 520px) {
-      .product-item { flex-wrap: wrap; }
-      .qty-wrapper { width: 100%; margin-top: 8px; }
+      .cart-item { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -299,13 +323,13 @@
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
       <div class="site-title">買咩都唔會出貨</div>
     </div>
-    <a class="home-button" href="https://benng512.github.io/demo-online-shop/">返回首頁</a>
+    <a class="home-button" href="index.html">返回首頁</a>
   </div>
 
   <div class="container">
     <div id="orderSection">
-      <h1>下單表格</h1>
-      <p class="subtitle">請填寫資料並選擇數量（庫存即時更新）</p>
+      <h1>結帳</h1>
+      <p class="subtitle">確認購物車內容後填寫聯絡資料</p>
 
       <form id="orderForm"
             action="https://script.google.com/macros/s/AKfycbxsYItF8bkmP0wKXwkzb8_mFjNcBgxd5lDbu7yLBLmelbJMzVXqhLI2I01SxLoBbNhbVg/exec"
@@ -313,12 +337,18 @@
             target="hidden_iframe"
             novalidate>
 
-        <!-- Hidden fields -->
         <input type="hidden" name="priceTotal" id="totalHidden" value="0">
         <input type="hidden" name="orderItems" id="orderContentHidden" value="">
         <input type="hidden" name="orderItemsWithId" id="orderItemsWithIdHidden" value="">
 
         <div class="card">
+          <h2>購物車內容</h2>
+          <div id="cartList">
+            <div class="empty-cart">載入中...</div>
+          </div>
+        </div>
+
+        <div class="card" id="contactCard">
           <h2>聯絡資料</h2>
 
           <label>稱呼 *</label>
@@ -334,14 +364,9 @@
           <div class="field-error" id="phoneError">請填寫電話號碼</div>
         </div>
 
-        <div class="card">
-          <h2>選擇產品</h2>
-          <div id="productList" class="loading">正在載入產品資料...</div>
-        </div>
-
         <div class="btn-group">
-          <button type="submit">提交訂單</button>
-          <a href="https://benng512.github.io/demo-online-shop/" class="btn-home">← 返回主頁</a>
+          <button type="submit" id="submitBtn">提交訂單</button>
+          <a href="index.html" class="btn-home">← 繼續購物</a>
         </div>
       </form>
     </div>
@@ -355,13 +380,12 @@
         <span id="countdownText">5</span> 秒後自動返回主頁...
       </div>
       <br>
-      <a href="https://benng512.github.io/demo-online-shop/" class="btn-home" style="max-width: 280px; margin: 0 auto;">
+      <a href="index.html" class="btn-home" style="max-width: 280px; margin: 0 auto;">
         立即返回主頁
       </a>
     </div>
   </div>
 
-  <!-- Fixed Total Bar -->
   <div class="total-bar" id="fixedTotalBar">
     <span>合計</span>
     <span class="total-price" id="totalPrice">$0.00</span>
@@ -375,8 +399,25 @@
   <iframe name="hidden_iframe" style="display:none;"></iframe>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
-    const HOME_URL = "https://benng512.github.io/demo-online-shop/";
+    const CART_KEY = "demo_shop_cart";
+    const HOME_URL = "index.html";
+
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      renderCart();
+    }
+
+    function clearCart() {
+      localStorage.removeItem(CART_KEY);
+    }
 
     function escapeHtml(str) {
       return String(str)
@@ -386,123 +427,91 @@
         .replace(/"/g, "&quot;");
     }
 
-    async function loadProducts() {
-      const listEl = document.getElementById("productList");
-      try {
-        const res = await fetch(SHEET_URL);
-        const text = await res.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const rows = json.table.rows;
+    function renderCart() {
+      const cart = getCart();
+      const listEl = document.getElementById("cartList");
+      const submitBtn = document.getElementById("submitBtn");
+      const contactCard = document.getElementById("contactCard");
 
-        let html = "";
-        rows.forEach(row => {
-          const cells = row.c;
-
-          // 0:ID | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
-          const id            = cells[0] ? (cells[0].v || "") : "";
-          const name          = cells[1] ? (cells[1].v || "") : "";
-          const originalRaw   = cells[2] ? cells[2].v : null;
-          const sellingRaw    = cells[3] ? cells[3].v : null;
-          const stock         = cells[4] ? Number(cells[4].v || 0) : 0;
-          const photo         = cells[5] ? (cells[5].v || "") : "";
-
-          if (!name) return;
-          if (sellingRaw === null || sellingRaw === "" || sellingRaw === undefined) return;
-
-          const sellingPrice  = Number(sellingRaw);
-          const originalPrice = originalRaw !== null && originalRaw !== "" ? Number(originalRaw) : null;
-
-          if (isNaN(sellingPrice) || sellingPrice < 0) return;
-
-          const hasDiscount = originalPrice !== null && !isNaN(originalPrice) && sellingPrice < originalPrice;
-          const isOut = stock <= 0;
-
-          let priceHtml = "";
-          if (hasDiscount) {
-            priceHtml = `
-              <div class="price-block">
-                <div class="original-price">$${originalPrice.toFixed(2)}</div>
-                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
-              </div>
-            `;
-          } else {
-            priceHtml = `
-              <div class="price-block">
-                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
-              </div>
-            `;
-          }
-
-          html += `
-            <div class="product-item">
-              ${photo
-                ? `<img class="product-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(name)}" loading="lazy"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                   <div class="no-photo" style="display:none;">No Photo</div>`
-                : `<div class="no-photo">No Photo</div>`}
-              <div class="product-info">
-                <div class="product-name">${escapeHtml(name)}</div>
-                ${priceHtml}
-                <div class="product-stock ${isOut ? 'out' : ''}">
-                  ${isOut ? '暫時缺貨' : '存貨：' + stock}
-                </div>
-              </div>
-              <div class="qty-wrapper">
-                <input type="number"
-                       name="${name}"
-                       min="0"
-                       ${isOut ? 'disabled' : `max="${stock}"`}
-                       value="0"
-                       data-price="${sellingPrice}"
-                       data-name="${name}"
-                       data-id="${id}">
-              </div>
-            </div>`;
-        });
-
-        listEl.innerHTML = html || `<div class="error-load">暫時沒有產品</div>`;
-
-        document.querySelectorAll(".qty-wrapper input").forEach(input => {
-          input.addEventListener("input", updateTotalAndContent);
-          input.addEventListener("change", updateTotalAndContent);
-        });
-
-      } catch (err) {
-        console.error(err);
-        listEl.innerHTML = `<div class="error-load">無法載入產品資料</div>`;
+      if (cart.length === 0) {
+        listEl.innerHTML = '<div class="empty-cart"><p>購物車是空的</p><a href="index.html">去選購產品</a></div>';
+        document.getElementById("totalPrice").textContent = "$0.00";
+        document.getElementById("totalHidden").value = "0";
+        document.getElementById("orderContentHidden").value = "";
+        document.getElementById("orderItemsWithIdHidden").value = "";
+        submitBtn.disabled = true;
+        contactCard.style.opacity = "0.5";
+        contactCard.style.pointerEvents = "none";
+        return;
       }
-    }
 
-    function updateTotalAndContent() {
+      submitBtn.disabled = false;
+      contactCard.style.opacity = "1";
+      contactCard.style.pointerEvents = "auto";
+
+      let html = "";
       let total = 0;
       const items = [];
       const itemsWithId = [];
 
-      document.querySelectorAll(".qty-wrapper input").forEach(input => {
-        const qty = parseInt(input.value) || 0;
-        if (qty <= 0) return;
+      cart.forEach(function(item, idx) {
+        const sub = item.qty * item.price;
+        total += sub;
+        items.push(item.name + " ： $" + item.price.toFixed(2) + " x " + item.qty);
+        itemsWithId.push(item.item_id + " & " + item.name + " ： $" + item.price.toFixed(2) + " x " + item.qty);
 
-        const price = parseFloat(input.dataset.price) || 0;
-        const name  = input.dataset.name || input.name;
-        const id    = input.dataset.id || "";
+        var photoHtml = item.photo
+          ? '<img class="cart-photo" src="' + escapeHtml(item.photo) + '" alt="" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><div class="no-photo" style="display:none;">No Photo</div>'
+          : '<div class="no-photo">No Photo</div>';
 
-        total += qty * price;
-        items.push(`${name} ： $${price.toFixed(2)} x ${qty}`);
-        itemsWithId.push(`${id} & ${name} ： $${price.toFixed(2)} x ${qty}`);
+        html += '<div class="cart-item">' + photoHtml +
+          '<div class="cart-info">' +
+            '<div class="cart-name">' + escapeHtml(item.name) + '</div>' +
+            '<div class="cart-price">$' + item.price.toFixed(2) + '</div>' +
+            '<div class="cart-subtotal">小計：$' + sub.toFixed(2) + '</div>' +
+            '<div class="qty-control">' +
+              '<button type="button" onclick="changeCartQty(' + idx + ', -1)">−</button>' +
+              '<span>' + item.qty + '</span>' +
+              '<button type="button" onclick="changeCartQty(' + idx + ', 1)">+</button>' +
+            '</div>' +
+            '<button type="button" class="btn-remove" onclick="removeItem(' + idx + ')">移除</button>' +
+          '</div></div>';
       });
 
+      listEl.innerHTML = html;
       document.getElementById("totalPrice").textContent = "$" + total.toFixed(2);
       document.getElementById("totalHidden").value = total.toFixed(2);
       document.getElementById("orderContentHidden").value = items.join("\n");
       document.getElementById("orderItemsWithIdHidden").value = itemsWithId.join("\n");
     }
 
-    // ===== Validation =====
+    function changeCartQty(idx, delta) {
+      const cart = getCart();
+      if (!cart[idx]) return;
+      let newQty = cart[idx].qty + delta;
+      if (newQty < 1) {
+        cart.splice(idx, 1);
+      } else {
+        if (cart[idx].stock > 0 && newQty > cart[idx].stock) {
+          alert("庫存不足（最多 " + cart[idx].stock + " 件）");
+          return;
+        }
+        cart[idx].qty = newQty;
+      }
+      saveCart(cart);
+    }
+
+    function removeItem(idx) {
+      const cart = getCart();
+      cart.splice(idx, 1);
+      saveCart(cart);
+    }
+
     function clearErrors() {
-      ["nameInput", "emailInput", "phoneInput"].forEach(id => {
+      ["nameInput", "emailInput", "phoneInput"].forEach(function(id) {
         document.getElementById(id).classList.remove("error");
       });
-      ["nameError", "emailError", "phoneError"].forEach(id => {
+      ["nameError", "emailError", "phoneError"].forEach(function(id) {
         document.getElementById(id).classList.remove("show");
       });
     }
@@ -536,8 +545,7 @@
       return isValid;
     }
 
-    // Clear error when user starts typing
-    ["nameInput", "emailInput", "phoneInput"].forEach(id => {
+    ["nameInput", "emailInput", "phoneInput"].forEach(function(id) {
       document.getElementById(id).addEventListener("input", function() {
         this.classList.remove("error");
         const errorId = id.replace("Input", "Error");
@@ -546,6 +554,13 @@
     });
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
+      const cart = getCart();
+      if (cart.length === 0) {
+        e.preventDefault();
+        alert("購物車是空的，請先選擇產品");
+        return;
+      }
+
       if (!validateForm()) {
         e.preventDefault();
         const firstError = document.querySelector("input.error");
@@ -553,9 +568,10 @@
         return;
       }
 
-      updateTotalAndContent();
+      renderCart();
 
       setTimeout(function() {
+        clearCart();
         document.getElementById("orderSection").style.display = "none";
         document.getElementById("fixedTotalBar").style.display = "none";
         document.getElementById("successPage").classList.add("show");
@@ -566,7 +582,6 @@
         const timer = setInterval(function() {
           seconds--;
           countdownEl.textContent = seconds;
-
           if (seconds <= 0) {
             clearInterval(timer);
             window.location.href = HOME_URL;
@@ -575,7 +590,7 @@
       }, 800);
     });
 
-    loadProducts();
+    renderCart();
   </script>
 </body>
 </html>

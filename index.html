@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>買咩都唔會出貨</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: #f5f7fa;
       color: #333;
       line-height: 1.5;
+      padding-bottom: 90px;
     }
 
     .top-banner {
@@ -31,8 +28,18 @@
       padding: 16px 24px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .header img {
@@ -48,31 +55,50 @@
       color: #222;
     }
 
-    .fixed-order-btn {
-      position: fixed;
-      bottom: 70px;
-      right: 20px;
-      z-index: 1000;
+    .cart-btn {
+      position: relative;
       background: #ffb703;
       color: #111;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 12px 20px;
+      border: none;
+      padding: 10px 18px;
       border-radius: 999px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      transition: transform 0.15s, box-shadow 0.15s;
     }
 
-    .fixed-order-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    .cart-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e63946;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
     }
 
     .hero {
       background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
                   url('https://ssl.gstatic.com/atari/images/simple-header-blended-small.png') center/cover;
-      height: 220px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -84,20 +110,20 @@
       font-family: Impact, Arial, sans-serif;
       font-style: italic;
       font-weight: 700;
-      font-size: 42px;
+      font-size: 38px;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 36px 20px;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 32px;
-      font-size: 28px;
+      margin-bottom: 28px;
+      font-size: 26px;
       color: #1a1a1a;
     }
 
@@ -113,6 +139,8 @@
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
     }
 
     .card:hover {
@@ -141,23 +169,23 @@
 
     .info {
       padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .name {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       margin-bottom: 8px;
     }
 
-    .price-block {
-      margin-bottom: 6px;
-    }
+    .price-block { margin-bottom: 6px; }
 
     .original-price {
-      font-size: 15px;
+      font-size: 14px;
       color: #999;
       text-decoration: line-through;
-      margin-bottom: 2px;
     }
 
     .selling-price {
@@ -167,13 +195,76 @@
     }
 
     .stock {
-      font-size: 14px;
+      font-size: 13px;
       color: #555;
+      margin-bottom: 12px;
     }
 
     .stock.out {
       color: #e63946;
       font-weight: 500;
+    }
+
+    .card-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .qty-control button {
+      width: 34px;
+      height: 36px;
+      border: none;
+      background: #f1f5f9;
+      font-size: 18px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .qty-control button:hover { background: #e2e8f0; }
+
+    .qty-control input {
+      width: 42px;
+      height: 36px;
+      border: none;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      -moz-appearance: textfield;
+    }
+
+    .qty-control input::-webkit-outer-spin-button,
+    .qty-control input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .btn-add {
+      flex: 1;
+      height: 36px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-add:hover { background: #1d4ed8; }
+    .btn-add:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
     }
 
     .loading, .error {
@@ -183,8 +274,68 @@
       color: #666;
     }
 
-    .error {
-      color: #e63946;
+    .error { color: #e63946; }
+
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #166534;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 2000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .checkout-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      color: white;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+    }
+
+    .checkout-bar.show {
+      transform: translateY(0);
+    }
+
+    .checkout-bar .info-text { font-size: 15px; }
+
+    .checkout-bar .total {
+      color: #fbbf24;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .checkout-bar a {
+      background: #ffb703;
+      color: #111;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 15px;
     }
 
     footer {
@@ -196,36 +347,30 @@
       margin-top: 40px;
     }
 
-    footer p {
-      margin: 4px 0;
-    }
+    footer p { margin: 4px 0; }
 
     @media (max-width: 600px) {
-      .fixed-order-btn {
-        top: auto;
-        bottom: 20px;
-        right: 16px;
-        left: 16px;
-        text-align: center;
-        border-radius: 12px;
-      }
+      .hero h1 { font-size: 28px; }
+      .card-actions { flex-direction: column; }
+      .qty-control { width: 100%; justify-content: center; }
+      .btn-add { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <div class="top-banner">
-    限時優惠，所有產品10折！
-  </div>
+  <div class="top-banner">限時優惠，所有產品10折！</div>
 
   <div class="header">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
-    <div class="site-title">買咩都唔會出貨</div>
+    <div class="header-left">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8-qteYJyiUdYWkNZX_ItWjR3w1Mqrk925PLX2ybI4w&s=10" alt="Logo">
+      <div class="site-title">買咩都唔會出貨</div>
+    </div>
+    <a href="order.html" class="cart-btn" id="headerCartBtn">
+      🛒 購物車
+      <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+    </a>
   </div>
-
-  <a href="https://benng512.github.io/demo-online-shop/order" class="fixed-order-btn">
-    立即下單
-  </a>
 
   <div class="hero">
     <h1>This page is for demo</h1>
@@ -236,6 +381,16 @@
     <div id="output" class="loading">正在載入產品資料...</div>
   </div>
 
+  <div class="checkout-bar" id="checkoutBar">
+    <div>
+      <div class="info-text"><span id="barCount">0</span> 件商品</div>
+      <div class="total" id="barTotal">$0.00</div>
+    </div>
+    <a href="order.html">前往結帳 →</a>
+  </div>
+
+  <div class="toast" id="toast">已加入購物車</div>
+
   <footer>
     <p>Contact Us: +852-12345678</p>
     <p>Email: abc@gmail.com</p>
@@ -243,6 +398,80 @@
 
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/1s-QYe2vN1ai7cTTrdOtJu6qJtZtX7IKv-Vl2IWb7G0I/gviz/tq?tqx=out:json&gid=607716711";
+    const CART_KEY = "demo_shop_cart";
+
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const cart = getCart();
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+      const badge = document.getElementById("cartBadge");
+      if (count > 0) {
+        badge.style.display = "flex";
+        badge.textContent = count > 99 ? "99+" : count;
+      } else {
+        badge.style.display = "none";
+      }
+
+      const bar = document.getElementById("checkoutBar");
+      if (count > 0) {
+        bar.classList.add("show");
+        document.getElementById("barCount").textContent = count;
+        document.getElementById("barTotal").textContent = "$" + total.toFixed(2);
+      } else {
+        bar.classList.remove("show");
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function addToCart(itemId, name, price, photo, stock, qty) {
+      qty = Math.max(1, parseInt(qty) || 1);
+      const cart = getCart();
+      const existing = cart.find(i => String(i.item_id) === String(itemId));
+
+      if (existing) {
+        const newQty = existing.qty + qty;
+        if (stock > 0 && newQty > stock) {
+          showToast("庫存不足（最多 " + stock + " 件）");
+          return;
+        }
+        existing.qty = newQty;
+      } else {
+        if (stock > 0 && qty > stock) {
+          showToast("庫存不足（最多 " + stock + " 件）");
+          return;
+        }
+        cart.push({
+          item_id: itemId,
+          name: name,
+          price: price,
+          photo: photo || "",
+          stock: stock,
+          qty: qty
+        });
+      }
+      saveCart(cart);
+      showToast("已加入「" + name + "」× " + qty);
+    }
 
     async function loadProducts() {
       try {
@@ -251,16 +480,17 @@
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const rows = json.table.rows;
 
-        let html = `<div class="products">`;
+        let html = '<div class="products">';
 
-        rows.forEach(row => {
+        rows.forEach((row, idx) => {
           const cells = row.c;
 
-          // 0:ID | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
+          // 0:item_id | 1:product_name | 2:original price | 3:selling price | 4:stock | 5:photo_url
+          const itemId        = cells[0] ? (cells[0].v ?? "") : "";
           const name          = cells[1] ? (cells[1].v || "") : "";
           const originalRaw   = cells[2] ? cells[2].v : null;
           const sellingRaw    = cells[3] ? cells[3].v : null;
-          const stock         = cells[4] ? (cells[4].v || 0) : 0;
+          const stock         = cells[4] ? Number(cells[4].v || 0) : 0;
           const photoUrl      = cells[5] ? (cells[5].v || "") : "";
 
           if (!name) return;
@@ -272,53 +502,64 @@
           if (isNaN(sellingPrice) || sellingPrice < 0) return;
 
           const hasDiscount = originalPrice !== null && !isNaN(originalPrice) && sellingPrice < originalPrice;
-
-          const stockClass = stock <= 0 ? "out" : "";
-          const stockText  = stock <= 0 ? "暫時缺貨" : `存貨：${stock}`;
+          const isOut = stock <= 0;
+          const safeId = String(itemId).replace(/"/g, "&quot;");
+          const safeName = String(name).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+          const qtyId = "qty_" + idx;
 
           let priceHtml = "";
           if (hasDiscount) {
-            priceHtml = `
-              <div class="price-block">
-                <div class="original-price">$${originalPrice.toFixed(2)}</div>
-                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
-              </div>
-            `;
+            priceHtml = '<div class="price-block"><div class="original-price">$' + originalPrice.toFixed(2) + '</div><div class="selling-price">$' + sellingPrice.toFixed(2) + '</div></div>';
           } else {
-            priceHtml = `
-              <div class="price-block">
-                <div class="selling-price">$${sellingPrice.toFixed(2)}</div>
-              </div>
-            `;
+            priceHtml = '<div class="price-block"><div class="selling-price">$' + sellingPrice.toFixed(2) + '</div></div>';
           }
 
-          html += `
-            <div class="card">
-              ${photoUrl 
-                ? `<img class="photo" src="${photoUrl}" alt="${name}" loading="lazy" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div class=\\'no-photo\\'>No Photo</div>')">`
-                : `<div class="no-photo">No Photo</div>`
-              }
-              <div class="info">
-                <div class="name">${name}</div>
-                ${priceHtml}
-                <div class="stock ${stockClass}">${stockText}</div>
-              </div>
-            </div>
-          `;
+          const photoHtml = photoUrl
+            ? '<img class="photo" src="' + photoUrl + '" alt="' + name + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentElement.insertAdjacentHTML(\'afterbegin\', \'<div class=\\\'no-photo\\\'>No Photo</div>\')">'
+            : '<div class="no-photo">No Photo</div>';
+
+          html += '<div class="card">' + photoHtml +
+            '<div class="info">' +
+              '<div class="name">' + name + '</div>' +
+              priceHtml +
+              '<div class="stock ' + (isOut ? "out" : "") + '">' + (isOut ? "暫時缺貨" : "存貨：" + stock) + '</div>' +
+              '<div class="card-actions">' +
+                '<div class="qty-control">' +
+                  '<button type="button" onclick="changeQty(\'' + qtyId + '\', -1)">−</button>' +
+                  '<input type="number" id="' + qtyId + '" value="1" min="1" ' + (isOut ? "disabled" : 'max="' + stock + '"') + '>' +
+                  '<button type="button" onclick="changeQty(\'' + qtyId + '\', 1)">+</button>' +
+                '</div>' +
+                '<button class="btn-add" ' + (isOut ? "disabled" : "") +
+                  ' onclick="addToCart(\'' + safeId + '\', \'' + safeName + '\', ' + sellingPrice + ', \'' + (photoUrl || "").replace(/'/g, "\\'") + '\', ' + stock + ', document.getElementById(\'' + qtyId + '\').value)">' +
+                  (isOut ? "缺貨" : "加入購物車") +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
         });
 
-        html += `</div>`;
+        html += '</div>';
         document.getElementById("output").innerHTML = html;
+        updateCartUI();
 
       } catch (err) {
         console.error(err);
-        document.getElementById("output").innerHTML = 
-          `<div class="error">無法載入資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>`;
+        document.getElementById("output").innerHTML =
+          '<div class="error">無法載入資料。<br>請確認 Google Sheet 已設為「知道連結的任何人」可以檢視。</div>';
       }
+    }
+
+    function changeQty(inputId, delta) {
+      const input = document.getElementById(inputId);
+      if (!input || input.disabled) return;
+      let val = parseInt(input.value) || 1;
+      val = Math.max(1, val + delta);
+      const max = parseInt(input.max);
+      if (!isNaN(max)) val = Math.min(val, max);
+      input.value = val;
     }
 
     loadProducts();
   </script>
-
 </body>
 </html>
