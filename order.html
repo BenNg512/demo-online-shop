@@ -60,7 +60,6 @@
       border: 1px solid #dbeafe;
     }
     .home-button:hover { background: #dbeafe; }
-
     .container {
       max-width: 720px;
       margin: 0 auto;
@@ -92,7 +91,6 @@
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
-
     .cart-item {
       display: flex;
       gap: 14px;
@@ -125,7 +123,6 @@
     .cart-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
     .cart-price { color: #e63946; font-weight: 600; font-size: 15px; }
     .cart-subtotal { font-size: 13px; color: #666; margin-top: 2px; }
-
     .qty-control {
       display: flex;
       align-items: center;
@@ -151,7 +148,6 @@
       font-weight: 600;
       font-size: 14px;
     }
-
     .btn-remove {
       background: none;
       border: none;
@@ -162,7 +158,6 @@
       padding: 0;
     }
     .btn-remove:hover { color: #e63946; }
-
     .empty-cart {
       text-align: center;
       padding: 40px 20px;
@@ -178,7 +173,6 @@
       border-radius: 8px;
       font-weight: 600;
     }
-
     label {
       display: block;
       margin-bottom: 6px;
@@ -211,7 +205,6 @@
       display: none;
     }
     .field-error.show { display: block; }
-
     .total-bar {
       position: fixed;
       bottom: 0;
@@ -232,7 +225,6 @@
       color: #fbbf24;
       font-size: 22px;
     }
-
     .btn-group {
       display: flex;
       flex-direction: column;
@@ -271,7 +263,6 @@
       cursor: pointer;
     }
     .btn-home:hover { background: #eff6ff; }
-
     .success-page {
       display: none;
       text-align: center;
@@ -298,7 +289,6 @@
       font-size: 15px;
       color: #666;
     }
-
     footer {
       background: #e0f7fa;
       padding: 24px;
@@ -308,7 +298,6 @@
       margin-top: 40px;
     }
     footer p { margin: 4px 0; }
-
     @media (max-width: 520px) {
       .cart-item { flex-wrap: wrap; }
     }
@@ -337,9 +326,10 @@
             target="hidden_iframe"
             novalidate>
 
-        <input type="hidden" name="priceTotal" id="totalHidden" value="0">
-        <input type="hidden" name="orderItems" id="orderContentHidden" value="">
-        <input type="hidden" name="orderItemsWithId" id="orderItemsWithIdHidden" value="">
+        <!-- Hidden fields matching Google Sheet headers -->
+        <input type="hidden" name="total_price" id="totalHidden" value="0">
+        <input type="hidden" name="order_Items" id="orderContentHidden" value="">
+        <input type="hidden" name="order_items_with_id" id="orderItemsWithIdHidden" value="">
 
         <div class="card">
           <h2>購物車內容</h2>
@@ -360,7 +350,7 @@
           <div class="field-error" id="emailError">請填寫正確的 Email</div>
 
           <label>電話號碼 *</label>
-          <input type="tel" id="phoneInput" name="phoneNo" placeholder="例如：91234567">
+          <input type="tel" id="phoneInput" name="phone_no" placeholder="例如：91234567">
           <div class="field-error" id="phoneError">請填寫電話號碼</div>
         </div>
 
@@ -380,9 +370,7 @@
         <span id="countdownText">5</span> 秒後自動返回主頁...
       </div>
       <br>
-      <a href="index.html" class="btn-home" style="max-width: 280px; margin: 0 auto;">
-        立即返回主頁
-      </a>
+      <a href="index.html" class="btn-home" style="max-width: 280px; margin: 0 auto;">立即返回主頁</a>
     </div>
   </div>
 
@@ -403,11 +391,8 @@
     const HOME_URL = "index.html";
 
     function getCart() {
-      try {
-        return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-      } catch {
-        return [];
-      }
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch { return []; }
     }
 
     function saveCart(cart) {
@@ -519,7 +504,6 @@
     function validateForm() {
       clearErrors();
       let isValid = true;
-
       const name  = document.getElementById("nameInput").value.trim();
       const email = document.getElementById("emailInput").value.trim();
       const phone = document.getElementById("phoneInput").value.trim();
@@ -529,27 +513,23 @@
         document.getElementById("nameError").classList.add("show");
         isValid = false;
       }
-
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         document.getElementById("emailInput").classList.add("error");
         document.getElementById("emailError").classList.add("show");
         isValid = false;
       }
-
       if (!phone) {
         document.getElementById("phoneInput").classList.add("error");
         document.getElementById("phoneError").classList.add("show");
         isValid = false;
       }
-
       return isValid;
     }
 
     ["nameInput", "emailInput", "phoneInput"].forEach(function(id) {
       document.getElementById(id).addEventListener("input", function() {
         this.classList.remove("error");
-        const errorId = id.replace("Input", "Error");
-        document.getElementById(errorId).classList.remove("show");
+        document.getElementById(id.replace("Input", "Error")).classList.remove("show");
       });
     });
 
@@ -560,7 +540,6 @@
         alert("購物車是空的，請先選擇產品");
         return;
       }
-
       if (!validateForm()) {
         e.preventDefault();
         const firstError = document.querySelector("input.error");
@@ -578,7 +557,6 @@
 
         let seconds = 5;
         const countdownEl = document.getElementById("countdownText");
-
         const timer = setInterval(function() {
           seconds--;
           countdownEl.textContent = seconds;
