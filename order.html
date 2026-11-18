@@ -443,7 +443,7 @@
         const sub = item.qty * item.price;
         total += sub;
         items.push(item.name + " ： $" + item.price.toFixed(2) + " x " + item.qty);
-        itemsWithId.push(item.item_id + " & " + item.name + " ： $" + item.price.toFixed(2) + " x " + item.qty);
+        itemsWithId.push("ID:" + item.item_id + " - " + item.name + " ： $" + item.price.toFixed(2) + " x " + item.qty);
 
         var photoHtml = item.photo
           ? '<img class="cart-photo" src="' + escapeHtml(item.photo) + '" alt="" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><div class="no-photo" style="display:none;">No Photo</div>'
